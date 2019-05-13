@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Shopify Word Search</string>
+    <string name="reset_button">Reset</string>
+    <string name="words_found_TV">Words Found:</string>
+    <string name="score_TV">0/0</string>
+    <string name="plus">+</string>
+    <string name="edit_words_blurb">Edit Words</string>
+    <string name="cancel">CANCEL</string>
+    <string name="save">SAVE</string>
+
+    <string name="kotlin">KOTLIN</string>
+    <string name="swift">SWIFT</string>
+    <string name="objective_c">OBJECTIVEC</string>
+    <string name="variable">VARIABLE</string>
+    <string name="mobile">MOBILE</string>
+    <string name="java">JAVA</string>
+    <string name="title_activity_edit_words">EditWordsActivity</string>
+
+    <string name="win_title">WINNER!</string>
+    <string name="win_message">Congratulations! You completed the search! Would you like to play again?</string>
+    <string name="play_again">PLAY AGAIN</string>
+</resources>

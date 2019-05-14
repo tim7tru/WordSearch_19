@@ -1,4 +1,4 @@
-package com.example.timmytruong.wordsearch_19.;
+package com.example.timmytruong.wordsearch_19;
 
 import android.content.Context;
 import android.view.LayoutInflater;

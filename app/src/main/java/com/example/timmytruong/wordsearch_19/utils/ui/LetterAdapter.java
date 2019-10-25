@@ -1,4 +1,4 @@
-package com.example.timmytruong.wordsearch_19;
+package com.example.timmytruong.wordsearch_19.utils.ui;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,7 +7,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.timmytruong.wordsearch_19.R;
+
 import java.util.ArrayList;
+import java.util.Collection;
+
+import kotlin.jvm.internal.markers.KMutableCollection;
 
 public class LetterAdapter extends BaseAdapter {
 
@@ -22,9 +27,9 @@ public class LetterAdapter extends BaseAdapter {
      * @param context: Context of mainActivity passed in
      * @param letters: Letters ArrayList
      */
-    LetterAdapter(Context context, ArrayList<Character> letters) {
+    public LetterAdapter(Context context, Collection<Character> letters) {
         this.mContext = context;
-        this.letters = letters;
+        this.letters = new ArrayList<>(letters);
     }
 
     /**

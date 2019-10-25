@@ -1,4 +1,4 @@
-package com.example.timmytruong.wordsearch_19;
+package com.example.timmytruong.wordsearch_19.utils;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -6,7 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 
-public class SearchDraw extends View{
+public class DrawUtils extends View{
 
     /**
      * Helper Variables
@@ -20,7 +20,7 @@ public class SearchDraw extends View{
      * DESCRIPTION: SearchDraw constructor that sets the initial settings of the paint object
      * @param context: passes in context of the activity in which to draw
      */
-    public SearchDraw (Context context) {
+    public DrawUtils(Context context) {
         super(context);
         paint = new Paint();
         paint.setStrokeWidth(LINE_WIDTH_1);

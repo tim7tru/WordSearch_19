@@ -1,4 +1,4 @@
-package com.example.timmytruong.wordsearch_19;
+package com.example.timmytruong.wordsearch_19.utils.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;

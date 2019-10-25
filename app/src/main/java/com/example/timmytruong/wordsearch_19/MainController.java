@@ -10,18 +10,24 @@ import android.widget.GridView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import com.example.timmytruong.wordsearch_19.activity.MainActivity;
+import com.example.timmytruong.wordsearch_19.utils.ui.LetterAdapter;
+import com.example.timmytruong.wordsearch_19.utils.DrawUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-class MainController {
+class MainController
+{
 
     /**
      * UI Declarations
      */
     private MainInterface mainInterface;
+
     private FrameLayout gridFrame;
     private GridView gridView;
     private Button resetBTN, plusBTN;
@@ -43,17 +49,18 @@ class MainController {
 
     /**
      * DESCRIPTION: MainController constructor to initialize an object of this class
-     * @param mainInterface: Context is passed to implement the interface
-     * @param gridView: Holds the grid of letters
-     * @param gridFrame: Holds the gridview and additional paint views
-     * @param resetBTN: Reset button UI
-     * @param scoreTV: Score textView UI
+     *
+     * @param mainInterface:   Context is passed to implement the interface
+     * @param gridView:        Holds the grid of letters
+     * @param gridFrame:       Holds the gridview and additional paint views
+     * @param resetBTN:        Reset button UI
+     * @param scoreTV:         Score textView UI
      * @param plusBTN:
-     * @param wordTableLayout:
-     * ArrayLists and HashMaps are initiailized here
-     * Same with the random object
+     * @param wordTableLayout: ArrayLists and HashMaps are initiailized here
+     *                         Same with the random object
      */
-    MainController(MainInterface mainInterface, GridView gridView, FrameLayout gridFrame, Button resetBTN, Button plusBTN, TextView scoreTV, TableLayout wordTableLayout) {
+    MainController(MainInterface mainInterface, GridView gridView, FrameLayout gridFrame, Button resetBTN, Button plusBTN, TextView scoreTV, TableLayout wordTableLayout)
+    {
         this.gridView = gridView;
         this.gridFrame = gridFrame;
         this.resetBTN = resetBTN;
@@ -85,7 +92,8 @@ class MainController {
      * Sets the onTouchListener
      * Sets the ResetClickListener
      */
-    void setGrid() {
+    void setGrid()
+    {
         score = 0;
         formedWord = "";
         fillWordsArray();
@@ -107,7 +115,8 @@ class MainController {
      * Removes all additional search views
      * Resets the grid
      */
-    void reset() {
+    void reset()
+    {
         hasChanged = new HashMap<>();
         wordsHM = new HashMap<>();
         letters = new ArrayList<>();
@@ -120,9 +129,11 @@ class MainController {
 
     /**
      * DESCRIPTION: Resets the entire game and restarts it with a new array list of word
+     *
      * @param wordsAL: the new array list of words
      */
-    void reset(ArrayList<String> wordsAL) {
+    void reset(ArrayList<String> wordsAL)
+    {
         this.wordsAL = wordsAL;
         hasChanged = new HashMap<>();
         wordsHM = new HashMap<>();
@@ -137,12 +148,14 @@ class MainController {
     /**
      * DESCRIPTION: Gets all the words needed and puts them into a hashmap
      * HashMap<String, Boolean>
-     *     String: word
-     *     Boolean: if the word has been found or not (True = found, False = not found)
+     * String: word
+     * Boolean: if the word has been found or not (True = found, False = not found)
      * Gets the total number of words needed to be found
      */
-    private void fillWordsArray() {
-        for (int i = 0; i < wordsAL.size(); i++) {
+    private void fillWordsArray()
+    {
+        for (int i = 0; i < wordsAL.size(); i++)
+        {
             wordsHM.put(wordsAL.get(i), false);
         }
         totalWords = wordsHM.size();
@@ -152,33 +165,45 @@ class MainController {
      * DESCRIPTION: Generates a random position and a random direction to be checked by other functions
      * Master function of checks for inserting the words
      */
-    private void findRandomPosition() {
-        for (String word : wordsHM.keySet()) {
+    private void findRandomPosition()
+    {
+        for (String word : wordsHM.keySet())
+        {
             int length = word.length(), direction, start, counter = 0;
             boolean isSized = false, isPositioned;
 
             start = random.nextInt(100);
             direction = random.nextInt(8);
 
-            while (!isSized) {
+            while (!isSized)
+            {
                 isSized = isSizedCorrectly(start, length, direction);
 
-                if (isSized) {
+                if (isSized)
+                {
                     isPositioned = isPositionedCorrectly(word, start, length, direction);
-                    if (isPositioned) {
+                    if (isPositioned)
+                    {
                         break;
-                    } else {
+                    }
+                    else
+                    {
                         isSized = false;
                     }
                 }
 
-                if (counter != 8 && direction == 7) {
+                if (counter != 8 && direction == 7)
+                {
                     direction = 0;
                     counter++;
-                } else if (counter != 8){
+                }
+                else if (counter != 8)
+                {
                     direction++;
                     counter++;
-                } else if (counter == 8) {
+                }
+                else if (counter == 8)
+                {
                     start = random.nextInt(100);
                     counter = 0;
                 }
@@ -190,16 +215,20 @@ class MainController {
 
     /**
      * DESCRIPTION: Once a word clears the checks in findRandomPosition(), this function inserts it into the letters arrayList
-     * @param start: starting position (position of cell in the gridView
-     * @param length: length of the word to be inserted
+     *
+     * @param start:     starting position (position of cell in the gridView
+     * @param length:    length of the word to be inserted
      * @param direction: direction of the word to be inserted
-     * @param word: the word itself
+     * @param word:      the word itself
      */
-    private void changeLetterArray(int start, int length, int direction, String word) {
-        switch (direction) {
+    private void changeLetterArray(int start, int length, int direction, String word)
+    {
+        switch (direction)
+        {
             case 0:
                 // STRAIGHT RIGHT
-                for (int i = 0; i < length; i++) {
+                for (int i = 0; i < length; i++)
+                {
                     hasChanged.put(start, true);
                     letters.set(start, word.charAt(i));
                     start++;
@@ -207,7 +236,8 @@ class MainController {
                 break;
             case 1:
                 // DIAGONAL DOWN-RIGHT
-                for (int i = 0; i < length; i++) {
+                for (int i = 0; i < length; i++)
+                {
                     hasChanged.put(start, true);
                     letters.set(start, word.charAt(i));
                     start += 11;
@@ -215,7 +245,8 @@ class MainController {
                 break;
             case 2:
                 // STRAIGHT DOWN
-                for (int i = 0; i < length; i++) {
+                for (int i = 0; i < length; i++)
+                {
                     hasChanged.put(start, true);
                     letters.set(start, word.charAt(i));
                     start += 10;
@@ -223,7 +254,8 @@ class MainController {
                 break;
             case 3:
                 // DIAGONAL DOWN-LEFT
-                for (int i = 0; i < length; i++) {
+                for (int i = 0; i < length; i++)
+                {
                     hasChanged.put(start, true);
                     letters.set(start, word.charAt(i));
                     start += 9;
@@ -231,7 +263,8 @@ class MainController {
                 break;
             case 4:
                 // STRIAGHT LEFT
-                for (int i = 0; i < length; i++) {
+                for (int i = 0; i < length; i++)
+                {
                     hasChanged.put(start, true);
                     letters.set(start, word.charAt(i));
                     start--;
@@ -239,7 +272,8 @@ class MainController {
                 break;
             case 5:
                 // DIAGONAL UP-LEFT
-                for (int i = 0; i < length; i++) {
+                for (int i = 0; i < length; i++)
+                {
                     hasChanged.put(start, true);
                     letters.set(start, word.charAt(i));
                     start -= 11;
@@ -247,7 +281,8 @@ class MainController {
                 break;
             case 6:
                 // STRAIGHT UP
-                for (int i = 0; i < length; i++) {
+                for (int i = 0; i < length; i++)
+                {
                     hasChanged.put(start, true);
                     letters.set(start, word.charAt(i));
                     start -= 10;
@@ -255,7 +290,8 @@ class MainController {
                 break;
             case 7:
                 // DIAGONAL UP-RIGHT
-                for (int i = 0; i < length; i++) {
+                for (int i = 0; i < length; i++)
+                {
                     hasChanged.put(start, true);
                     letters.set(start, word.charAt(i));
                     start -= 9;
@@ -266,92 +302,127 @@ class MainController {
 
     /**
      * DESCRIPTION: After seeing if the word can fit into the space length wise, we must ensure that the word does not interfere with another inserted word
-     * @param word: word to be inserted
-     * @param start: start position of the word (index of cell in gridview)
-     * @param length: length of the word to be inserted
+     *
+     * @param word:      word to be inserted
+     * @param start:     start position of the word (index of cell in gridview)
+     * @param length:    length of the word to be inserted
      * @param direction: direction of the word
      * @return boolean: if the word can be placed w/out disruption or not
      */
-    private boolean isPositionedCorrectly(String word, int start, int length, int direction) {
+    private boolean isPositionedCorrectly(String word, int start, int length, int direction)
+    {
         boolean canFit = false;
 
-        switch (direction) {
+        switch (direction)
+        {
             case 0:
                 // STRAIGHT RIGHT
-                for (int i = start, j = 0; j < length; i++, j++) {
-                    if (letterChecker(word, i, j)) {
+                for (int i = start, j = 0; j < length; i++, j++)
+                {
+                    if (letterChecker(word, i, j))
+                    {
                         canFit = true;
-                    } else {
+                    }
+                    else
+                    {
                         return false;
                     }
                 }
                 break;
             case 1:
                 // DIAGONAL DOWN-RIGHT
-                for (int i = start, j = 0; j < length; i += 11, j++) {
-                    if (letterChecker(word, i, j)) {
+                for (int i = start, j = 0; j < length; i += 11, j++)
+                {
+                    if (letterChecker(word, i, j))
+                    {
                         canFit = true;
-                    } else {
+                    }
+                    else
+                    {
                         return false;
                     }
                 }
                 break;
             case 2:
                 // STRAIGHT DOWN
-                for (int i = start, j = 0; j < length; i += 10, j++) {
-                    if (letterChecker(word, i, j)) {
+                for (int i = start, j = 0; j < length; i += 10, j++)
+                {
+                    if (letterChecker(word, i, j))
+                    {
                         canFit = true;
-                    } else {
+                    }
+                    else
+                    {
                         return false;
                     }
                 }
                 break;
             case 3:
                 // DIAGONAL DOWN-LEFT
-                for (int i = start, j = 0; j < length; i += 9, j++) {
-                    if (letterChecker(word, i, j)) {
+                for (int i = start, j = 0; j < length; i += 9, j++)
+                {
+                    if (letterChecker(word, i, j))
+                    {
                         canFit = true;
-                    } else {
+                    }
+                    else
+                    {
                         return false;
                     }
                 }
                 break;
             case 4:
                 // STRAIGHT LEFT
-                for (int i = start, j = 0; j < length; i--, j++) {
-                    if (letterChecker(word, i, j)) {
+                for (int i = start, j = 0; j < length; i--, j++)
+                {
+                    if (letterChecker(word, i, j))
+                    {
                         canFit = true;
-                    } else {
+                    }
+                    else
+                    {
                         return false;
                     }
                 }
                 break;
             case 5:
                 // DIAGONAL UP-LEFT
-                for (int i = start, j = 0; j < length; i -= 11, j++) {
-                    if (letterChecker(word, i, j)) {
+                for (int i = start, j = 0; j < length; i -= 11, j++)
+                {
+                    if (letterChecker(word, i, j))
+                    {
                         canFit = true;
-                    } else {
+                    }
+                    else
+                    {
                         return false;
                     }
                 }
                 break;
             case 6:
                 // STRAIGHT UP
-                for (int i = start, j = 0; j < length; i -= 10, j++) {
-                    if (letterChecker(word, i, j)) {
+                for (int i = start, j = 0; j < length; i -= 10, j++)
+                {
+                    if (letterChecker(word, i, j))
+                    {
                         canFit = true;
-                    } else {
+                    }
+                    else
+                    {
                         return false;
                     }
                 }
                 break;
             case 7:
                 // DIAGONAL UP-RIGHT
-                for (int i = start, j = 0; j < length; i -= 9, j++) {
-                    if (letterChecker(word, i, j)) {
+                for (int i = start, j = 0; j < length; i -= 9, j++)
+                {
+                    if (letterChecker(word, i, j))
+                    {
                         canFit = true;
-                    } else {
+                    }
+                    else
+                    {
                         return false;
                     }
                 }
@@ -362,37 +433,52 @@ class MainController {
 
     /**
      * DESCRIPTION: Helper function for isPositionedCorrectly. If the letter conflicts with another word's letter, it checks if they are compatible or not. (same letter?)
+     *
      * @param word: word to be inserted
-     * @param i: index of cell/letter in gridview / letters arraylist
-     * @param j: index of letter in word
+     * @param i:    index of cell/letter in gridview / letters arraylist
+     * @param j:    index of letter in word
      * @return boolean: if the word letter can be inserted there
      */
-    private boolean letterChecker(String word, int i, int j) {
-        if (i < 100) {
-            if (hasChanged.get(i)) {
-                if (letters.get(i).equals(word.charAt(j))) {
+    private boolean letterChecker(String word, int i, int j)
+    {
+        if (i < 100)
+        {
+            if (hasChanged.get(i))
+            {
+                if (letters.get(i).equals(word.charAt(j)))
+                {
                     return true;
-                } else {
+                }
+                else
+                {
                     return false;
                 }
-            } else {
+            }
+            else
+            {
                 return true;
             }
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
 
     /**
      * DESCRIPTION: Checks to see if a word can fit into a direction length-wise
-     * @param start: start position (position of cell/letter in arraylist/gridview)
-     * @param length: length of word to be inserted
+     *
+     * @param start:     start position (position of cell/letter in arraylist/gridview)
+     * @param length:    length of word to be inserted
      * @param direction: direction of the word to be inserted
      * @return boolean: if the word can fit into the direction
      */
-    private boolean isSizedCorrectly(int start, int length, int direction) {
-        if (start >= 0) {
-            switch (direction) {
+    private boolean isSizedCorrectly(int start, int length, int direction)
+    {
+        if (start >= 0)
+        {
+            switch (direction)
+            {
                 case 0:
                     // STRAIGHT RIGHT
                     return (((((start / 10) * 10) + 9) - start) >= length);
@@ -426,10 +512,12 @@ class MainController {
      * DESCRIPTION: Generates random letters and inserts them into the arrayList of letters
      * These make up all the letters not altered by the words
      */
-    private void generateRandomLetters() {
+    private void generateRandomLetters()
+    {
         // Filling an arraylist with random characters
-        for(int i = 0; i < 100; i++) {
-            char randomChar = (char) ((int)'A' + Math.random() * ((int)'Z' - (int)'A' + 1));
+        for (int i = 0; i < 100; i++)
+        {
+            char randomChar = (char) ((int) 'A' + Math.random() * ((int) 'Z' - (int) 'A' + 1));
             hasChanged.put(i, false);
             letters.add(randomChar);
         }
@@ -438,9 +526,11 @@ class MainController {
     /**
      * DESCRIPTION: OnclickListener for the resetButton, this is passed into a view function
      */
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
+    private View.OnClickListener onClickListener = new View.OnClickListener()
+    {
         @Override
-        public void onClick(View v) {
+        public void onClick(View v)
+        {
             reset();
         }
     };
@@ -448,8 +538,9 @@ class MainController {
     /**
      * DESCRIPTION: PaintHolder Class to hold the views of paint
      */
-    private class PaintViewHolder {
-        private SearchDraw searchDraw;
+    private class PaintViewHolder
+    {
+        private DrawUtils drawUtils;
     }
 
     /**
@@ -458,9 +549,11 @@ class MainController {
      * MOVE: Continues to collect letters
      * UP: If the collected letters match a word in the words hashmap
      */
-    private View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+    private View.OnTouchListener onTouchListener = new View.OnTouchListener()
+    {
         @Override
-        public boolean onTouch(View v, MotionEvent event) {
+        public boolean onTouch(View v, MotionEvent event)
+        {
 
             // Gets the type of motion detected
             int action = event.getActionMasked();
@@ -480,7 +573,8 @@ class MainController {
             int position = grid.pointToPosition(x, y);
 
             // If the position of the cell is a valid position/index in the gridview
-            if (position >= 0 && position < 100) {
+            if (position >= 0 && position < 100)
+            {
 
                 // Getting the cell's view (TextView) from the position by Tag set in letterAdapter
                 TextView cellView = grid.findViewWithTag(position);
@@ -497,20 +591,22 @@ class MainController {
                 centreY = globalY + cellView.getHeight() / 2;
 
                 // Create a new searchDraw object to fit into the PaintViewHolder class
-                newPaint.searchDraw = new SearchDraw(MainActivity.context);
+                newPaint.drawUtils = new DrawUtils(MainActivity.context);
 
                 // Add the object into the stack of views (FrameLayout)
-                gridFrame.addView(newPaint.searchDraw);
+                gridFrame.addView(newPaint.drawUtils);
 
                 // Switch case for different types of motion
-                switch (action) {
+                switch (action)
+                {
                     // Movements:
                     case MotionEvent.ACTION_DOWN:
                     case MotionEvent.ACTION_MOVE:
 
                         // If the position is not the previously set position
                         // [PURPOSE]: To formulate the searched word without replicating the same letter
-                        if (currentPosition != position) {
+                        if (currentPosition != position)
+                        {
 
                             // Prevent parent from stealing the event
                             v.getParent().requestDisallowInterceptTouchEvent(true);
@@ -520,7 +616,8 @@ class MainController {
                             formedWord += letter;
 
                             // Specific Movements: (ex. Things that apply to ONLY ACTION_DOWN, etc.)
-                            switch (action) {
+                            switch (action)
+                            {
                                 // Start of Draw/Search
                                 case MotionEvent.ACTION_DOWN:
                                     // Get the start view count before the drawing begins
@@ -531,11 +628,11 @@ class MainController {
                                     startCentreY = globalY + cellView.getHeight() / 2;
 
                                     // Start Drawing
-                                    newPaint.searchDraw.drawLine(startCentreX, startCentreY, centreX, centreY, 0);
+                                    newPaint.drawUtils.drawLine(startCentreX, startCentreY, centreX, centreY, 0);
                                     break;
                                 case MotionEvent.ACTION_MOVE: // When the input is moved
                                     // Continue to draw
-                                    newPaint.searchDraw.drawLine(centreX, centreY, centreX, centreY, 0);
+                                    newPaint.drawUtils.drawLine(centreX, centreY, centreX, centreY, 0);
                                     break;
                             }
                         }
@@ -548,10 +645,12 @@ class MainController {
                         endViewNumber = gridFrame.getChildCount();
 
                         // If the formed word is inside the answers hashmap (words)
-                        if (wordsHM.containsKey(formedWord)) {
+                        if (wordsHM.containsKey(formedWord))
+                        {
 
                             // If the word has not been found
-                            if (!wordsHM.get(formedWord)) {
+                            if (!wordsHM.get(formedWord))
+                            {
                                 // Increment the score
                                 score++;
 
@@ -559,11 +658,11 @@ class MainController {
                                 mainInterface.setScoreTextView(score, totalWords, scoreTV);
 
                                 // Make a new paint view and add it to the frame layout
-                                newPaint.searchDraw = new SearchDraw(MainActivity.context);
-                                gridFrame.addView(newPaint.searchDraw);
+                                newPaint.drawUtils = new DrawUtils(MainActivity.context);
+                                gridFrame.addView(newPaint.drawUtils);
 
                                 // Draw a new Green (since the answer is correct) line from the start to the finish
-                                newPaint.searchDraw.drawLine(startCentreX, startCentreY, centreX, centreY, 1);
+                                newPaint.drawUtils.drawLine(startCentreX, startCentreY, centreX, centreY, 1);
 
                                 // Change the word to found
                                 wordsHM.put(formedWord, true);
@@ -571,7 +670,8 @@ class MainController {
                                 // Strike out the word in the tableLayout
                                 mainInterface.strikeOutWord(formedWord, wordTableLayout);
 
-                                if (score == totalWords) {
+                                if (score == totalWords)
+                                {
                                     // If the user finds all the words, display a dialog
                                     mainInterface.displayWinDialogue();
                                 }
@@ -591,15 +691,19 @@ class MainController {
                         break;
                 }
 
-            } else if (position == -1 && action == MotionEvent.ACTION_UP) { // This is for if the word is found but if the user stopped the input on a position that is invalid (position == -1)
+            }
+            else if (position == -1 && action == MotionEvent.ACTION_UP)
+            { // This is for if the word is found but if the user stopped the input on a position that is invalid (position == -1)
                 // When the search is completed, the ending childcount is taken
                 endViewNumber = gridFrame.getChildCount();
 
                 // If the formed word is inside the answers hashmap (words)
-                if (wordsHM.containsKey(formedWord)) {
+                if (wordsHM.containsKey(formedWord))
+                {
 
                     // If the word has not been found
-                    if (!wordsHM.get(formedWord)) {
+                    if (!wordsHM.get(formedWord))
+                    {
                         // Increment the score
                         score++;
 
@@ -607,11 +711,11 @@ class MainController {
                         mainInterface.setScoreTextView(score, totalWords, scoreTV);
 
                         // Make a new paint view and add it to the frame layout
-                        newPaint.searchDraw = new SearchDraw(MainActivity.context);
-                        gridFrame.addView(newPaint.searchDraw);
+                        newPaint.drawUtils = new DrawUtils(MainActivity.context);
+                        gridFrame.addView(newPaint.drawUtils);
 
                         // Draw a new Green (since the answer is correct) line from the start to the finish
-                        newPaint.searchDraw.drawLine(startCentreX, startCentreY, centreX, centreY, 1);
+                        newPaint.drawUtils.drawLine(startCentreX, startCentreY, centreX, centreY, 1);
 
                         // Change the word to found
                         wordsHM.put(formedWord, true);
@@ -619,7 +723,8 @@ class MainController {
                         // Strike out the word in the tableLayout
                         mainInterface.strikeOutWord(formedWord, wordTableLayout);
 
-                        if (score == totalWords) {
+                        if (score == totalWords)
+                        {
                             // If the user finds all the words, display a dialog
                             mainInterface.displayWinDialogue();
                         }
@@ -627,7 +732,7 @@ class MainController {
                 }
 
                 // Remove the yellow search view
-                mainInterface.removeSearchView(startViewNumber - 1 , endViewNumber, gridFrame);
+                mainInterface.removeSearchView(startViewNumber - 1, endViewNumber, gridFrame);
 
                 // Reset the formed word
                 formedWord = "";
@@ -640,16 +745,26 @@ class MainController {
     /**
      * DESCRIPTION: View Functions Implemented in MainActivity
      */
-    public interface MainInterface {
+    public interface MainInterface
+    {
         void setLetters(LetterAdapter letterAdapter, GridView gridView);
+
         void setOnTouchListener(View.OnTouchListener onTouchListener, GridView gridView);
+
         void setResetClickListener(View.OnClickListener onClickListener, Button resetBTN);
+
         void setScoreTextView(int score, int total, TextView scoreTV);
+
         void removeSearchView(int startViewCount, int endViewCount, FrameLayout gridFrame);
+
         void strikeOutWord(String word, TableLayout tableLayout);
+
         void setTableLayout(Set<String> keySet, TableLayout tableLayout);
+
         void clearTableLayout(TableLayout tableLayout);
+
         void setPlusClickListener(ArrayList<String> wordsAL, Button plusBTN);
+
         void displayWinDialogue();
     }
 }

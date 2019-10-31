@@ -23,5 +23,5 @@ interface GridHandler
 
     fun displayWinDialogue(context: Context)
 
-    fun getLetterAdapter(context: Context, letters: ArrayList<Char>): LetterAdapter
+    fun getLetterAdapter(context: Context, letters: LinkedHashMap<Int, Char>): LetterAdapter
 }

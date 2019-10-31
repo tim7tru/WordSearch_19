@@ -1,19 +1,12 @@
 package com.example.timmytruong.wordsearch_19.models
 
-class GridModel(words: LinkedHashMap<String, Boolean>, letters: LinkedHashMap<Int, Char>, states: LinkedHashMap<Int, Boolean>)
+class GridModel
 {
     private var wordsHashMap: LinkedHashMap<String, Boolean> = linkedMapOf()
 
     private var lettersHashMap: LinkedHashMap<Int, Char> = linkedMapOf()
 
     private var letterStateHashMap: LinkedHashMap<Int, Boolean> = linkedMapOf()
-
-    init
-    {
-        this.wordsHashMap = words
-        this.lettersHashMap = letters
-        this.letterStateHashMap = states
-    }
 
     fun setWordsHashMap(wordsHashMap: LinkedHashMap<String, Boolean>)
     {

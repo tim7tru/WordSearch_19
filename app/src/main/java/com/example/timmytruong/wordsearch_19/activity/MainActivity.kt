@@ -5,10 +5,8 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Paint
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.Gravity
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -17,23 +15,19 @@ import com.example.timmytruong.wordsearch_19.adapters.GridAdapter
 import com.example.timmytruong.wordsearch_19.interfaces.GridHandler
 import com.example.timmytruong.wordsearch_19.interfaces.InformationBarHandler
 import com.example.timmytruong.wordsearch_19.utils.AppConstants
-import com.example.timmytruong.wordsearch_19.utils.DrawUtils
 import com.example.timmytruong.wordsearch_19.utils.ui.LetterAdapter
 import com.example.timmytruong.wordsearch_19.viewmodel.GridViewModel
 import com.example.timmytruong.wordsearch_19.viewmodel.InformationBarViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlin.properties.Delegates
 
 class MainActivity : Activity()
 {
+    private val gridViewModel: GridViewModel = GridViewModel()
 
-    private var gridAdapter: GridAdapter by Delegates.notNull()
+    private val informationBarViewModel: InformationBarViewModel = InformationBarViewModel()
 
-    private var gridViewModel: GridViewModel by Delegates.notNull()
-
-    private var informationBarViewModel: InformationBarViewModel by Delegates.notNull()
-
-    private val gridHandler = object : GridHandler {
+    private val gridHandler = object : GridHandler
+    {
 
         override fun strikeOutWord(context: Context, word: String, tableLayout: TableLayout)
         {
@@ -60,7 +54,8 @@ class MainActivity : Activity()
             }
         }
 
-        override fun setOnTouchListener(context: Context, onTouchListener: View.OnTouchListener, gridView: GridView)
+        override fun setOnTouchListener(context: Context, onTouchListener: View.OnTouchListener,
+                                        gridView: GridView)
         {
             gridView.setOnTouchListener(onTouchListener)
         }
@@ -91,14 +86,14 @@ class MainActivity : Activity()
                 val wordText: TextView = TextView(context)
 
                 val textParams: TableRow.LayoutParams = TableRow.LayoutParams()
-                textParams.weight = 0.5 as Float
+                textParams.weight = 0.5.toFloat()
                 textParams.height = TableLayout.LayoutParams.WRAP_CONTENT
                 textParams.width = 0
                 wordText.layoutParams = textParams
 
-                wordText.textSize = 16 as Float
+                wordText.textSize = 16.toFloat()
                 wordText.text = word
-                wordText.setPadding(0,10,0,10)
+                wordText.setPadding(0, 10, 0, 10)
                 wordText.gravity = Gravity.CENTER
 
                 if (wordText.parent != null)
@@ -144,7 +139,8 @@ class MainActivity : Activity()
             builder.show()
         }
 
-        override fun getLetterAdapter(context: Context, letters: ArrayList<Char>): LetterAdapter
+        override fun getLetterAdapter(context: Context,
+                                      letters: LinkedHashMap<Int, Char>): LetterAdapter
         {
             return LetterAdapter(context, letters)
         }
@@ -163,11 +159,12 @@ class MainActivity : Activity()
             scoreView.text = text
         }
 
-        override fun setPlusClickListener(context: Context, wordsAL: ArrayList<String>, plusBTN: Button)
+        override fun setPlusClickListener(context: Context, wordsHM: LinkedHashMap<String, Boolean>,
+                                          plusBTN: Button)
         {
             val plusClickListener: View.OnClickListener = View.OnClickListener { v: View ->
-                val intent: Intent = Intent(context, EditWordsActivity::class.java)
-                intent.putStringArrayListExtra(AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY, wordsAL)
+                val intent = Intent(context, EditWordsActivity::class.java)
+                intent.putExtra(AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY, wordsHM)
                 startActivityForResult(intent, 0)
             }
             plusBTN.setOnClickListener(plusClickListener)
@@ -179,15 +176,14 @@ class MainActivity : Activity()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        gridViewModel = GridViewModel()
-        gridAdapter = GridAdapter(this, gridHandler, gridView, gridFrame, wordTableLayout, gridViewModel)
+        val gridAdapter = GridAdapter(this, gridHandler, gridView as GridView,
+                gridFrame as FrameLayout, wordTableLayout as TableLayout, score as TextView,
+                gridViewModel, informationBarHandler, informationBarViewModel)
 
-        informationBarViewModel = InformationBarViewModel()
-
-        gridAdapter.setupWords()
-        gridAdapter.setupGrid()
         gridAdapter.setupWordGrid()
         gridAdapter.setupUI()
+        informationBarHandler.setScoreTextView(informationBarViewModel.getScore(), informationBarViewModel.getTotal(), score)
+//        TODO("INFORMATION BAR IMPLEMENTATION")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
@@ -195,116 +191,13 @@ class MainActivity : Activity()
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == 0 && data != null)
         {
-            val words: ArrayList<String> = data.getStringArrayListExtra(AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY)
-            TODO("Implement Reset")
+            val words: ArrayList<String> = data.getStringArrayListExtra(
+                    AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY)
+//            TODO("Implement Reset")
         }
         else
         {
-            TODO("Implement Reset")
+//            TODO("Implement Reset")
         }
-    }
-
-    private val onTouchListener = View.OnTouchListener { v: View, event: MotionEvent ->
-
-        val action: Int = event.actionMasked
-
-        val grid: GridView = v as GridView
-
-        val drawUtils = DrawUtils(this)
-
-        val x: Int = event.x.toInt()
-
-        val y: Int = event.y.toInt()
-
-        val position: Int = grid.pointToPosition(x, y)
-
-        val globalX: Int?
-
-        val globalY: Int?
-
-        val centreX: Int?
-
-        val centreY: Int?
-
-        val startCentreX: Int?
-
-        val startCentreY: Int?
-
-        val endCentreX: Int?
-
-        val endCentreY: Int?
-
-        val endViewNumber: Int?
-
-        val startViewNumber: Int?
-
-        val words: HashMap<String, Boolean> = gridViewModel.getWordsHashMap()
-
-        var currentPosition = -1
-
-        var formedWord = ""
-
-        if (position >= 0 && position < 100)
-        {
-            val cellView: TextView = grid.findViewWithTag(position)
-
-            val cellViewRect: Rect = Rect()
-
-            cellView.getDrawingRect(cellViewRect)
-
-            grid.offsetDescendantRectToMyCoords(cellView, cellViewRect)
-
-            globalX = cellViewRect.left
-            globalY = cellViewRect.top
-
-            centreX = globalX + cellView.width / 2
-            centreY = globalY + cellView.height / 2
-
-            gridView.addView(drawUtils)
-
-            when (action)
-            {
-                MotionEvent.ACTION_DOWN,
-                MotionEvent.ACTION_MOVE -> {
-                    if (currentPosition != position)
-                    {
-                        v.parent.requestDisallowInterceptTouchEvent(true)
-
-                        formedWord += cellView.text.toString()
-
-                        when (action)
-                        {
-                            MotionEvent.ACTION_DOWN -> {
-                                startViewNumber = gridFrame.childCount
-
-                                startCentreX = globalX + cellView.width / 2
-                                startCentreY = globalY + cellView.height / 2
-
-                                drawUtils.drawLine(startCentreX.toFloat(), startCentreY.toFloat(), centreX.toFloat(), centreY.toFloat(), 0)
-                            }
-                            MotionEvent.ACTION_MOVE -> {
-                                drawUtils.drawLine(centreX.toFloat(), centreY.toFloat(), centreX.toFloat(), centreY.toFloat(), 0)
-                            }
-                        }
-                    }
-                    currentPosition = position
-                }
-                MotionEvent.ACTION_UP -> {
-                    endViewNumber = gridFrame.childCount
-
-                    if (words.contains(formedWord))
-                    {
-                        if (!(words.get(formedWord) as Boolean))
-                        {
-
-                        }
-                    }
-                }
-            }
-
-
-        }
-
-        true
     }
 }

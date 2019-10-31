@@ -5,13 +5,7 @@ import com.example.timmytruong.wordsearch_19.R
 
 object AppConstants
 {
-     val DEFAULT_WORDS: ArrayList<String> = arrayListOf(Resources.getSystem().getString(
-             R.string.java),
-             Resources.getSystem().getString(R.string.kotlin),
-             Resources.getSystem().getString(R.string.swift),
-             Resources.getSystem().getString(R.string.mobile),
-             Resources.getSystem().getString(R.string.variable),
-             Resources.getSystem().getString(R.string.objective_c))
+     val DEFAULT_WORDS = arrayOf("KOTLIN", "SWIFT", "OBJECTIVEC", "MOBILE", "JAVA", "VARIABLE")
 
      val INTENT_EXTRA_WORDS_ARRAY_LIST_KEY = "words"
 
@@ -36,4 +30,8 @@ object AppConstants
      val DIRECTION_STRAIGHT_UP = 6
 
      val DIRECTION_DIAGONAL_UP_RIGHT = 7
+
+     val PAINT_LINE_WIDTH_SEARCH = 30.0f
+
+     val PAINT_LINE_WIDTH_FOUND = 55.0f
 }

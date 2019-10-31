@@ -1,6 +1,7 @@
 package com.example.timmytruong.wordsearch_19.adapters
 
 import android.content.Context
+import android.icu.text.IDNA
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
@@ -8,10 +9,12 @@ import android.widget.GridView
 import android.widget.TableLayout
 import android.widget.TextView
 import com.example.timmytruong.wordsearch_19.interfaces.GridHandler
+import com.example.timmytruong.wordsearch_19.interfaces.InformationBarHandler
 import com.example.timmytruong.wordsearch_19.utils.AppConstants
 import com.example.timmytruong.wordsearch_19.utils.DrawUtils
 import com.example.timmytruong.wordsearch_19.utils.ui.LetterAdapter
 import com.example.timmytruong.wordsearch_19.viewmodel.GridViewModel
+import com.example.timmytruong.wordsearch_19.viewmodel.InformationBarViewModel
 import java.util.ArrayList
 import kotlin.properties.Delegates
 import kotlin.random.Random
@@ -21,19 +24,28 @@ class GridAdapter(context: Context,
                   gridView: GridView,
                   gridFrameLayout: FrameLayout,
                   wordTableLayout: TableLayout,
-                  gridViewModel: GridViewModel)
+                  scoreTextView: TextView,
+                  gridViewModel: GridViewModel,
+                  informationBarHandler: InformationBarHandler,
+                  informationBarViewModel: InformationBarViewModel)
 {
-    var context: Context by Delegates.notNull()
+    private val context: Context
 
-    var gridHandler: GridHandler by Delegates.notNull()
+    private val gridHandler: GridHandler
 
-    var gridView: GridView by Delegates.notNull()
+    private val gridView: GridView
 
-    var gridFrameLayout: FrameLayout by Delegates.notNull()
+    private val gridFrameLayout: FrameLayout
 
-    var wordTableLayout: TableLayout by Delegates.notNull()
+    private val wordTableLayout: TableLayout
 
-    var gridViewModel: GridViewModel by Delegates.notNull()
+    private val scoreTextView: TextView
+
+    private val gridViewModel: GridViewModel
+
+    private val informationBarViewModel: InformationBarViewModel
+
+    private val informationBarHandler: InformationBarHandler
 
     init
     {
@@ -42,8 +54,13 @@ class GridAdapter(context: Context,
         this.gridView = gridView
         this.gridFrameLayout = gridFrameLayout
         this.wordTableLayout = wordTableLayout
+        this.scoreTextView = scoreTextView
+        this.informationBarHandler = informationBarHandler
+        this.informationBarViewModel = informationBarViewModel
         this.gridViewModel = gridViewModel
     }
+
+    private val drawAdapter: DrawAdapter = DrawAdapter(context, gridFrameLayout, gridView, wordTableLayout, scoreTextView, gridHandler, gridViewModel, informationBarViewModel, informationBarHandler)
 
     fun setupGrid()
     {
@@ -55,11 +72,11 @@ class GridAdapter(context: Context,
         setupWords(null)
     }
 
-    fun setupWords(newWords: ArrayList<String>?)
+    fun setupWords(newWords: LinkedHashMap<String, Boolean>?)
     {
         if (newWords == null)
         {
-            gridViewModel.setWordsHashMap()
+            gridViewModel.setWordsHashMap(null)
         }
         else
         {
@@ -212,8 +229,10 @@ class GridAdapter(context: Context,
 
     fun setupUI()
     {
-        val letterAdapter = LetterAdapter(context, gridViewModel.getLettersHashMap().values)
+        val letterAdapter = LetterAdapter(context, gridViewModel.getLettersHashMap())
         gridHandler.setLetters(context, letterAdapter, gridView)
         gridHandler.setTableLayout(context, gridViewModel.getWordsHashMap().keys, wordTableLayout)
+        gridHandler.setOnTouchListener(context, drawAdapter.getOnTouchListener(), gridView)
+        informationBarViewModel.setTotalWords(gridViewModel.getWordsHashMap().size)
     }
 }

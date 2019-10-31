@@ -2,13 +2,13 @@ package com.example.timmytruong.wordsearch_19.models
 
 class GridModel
 {
-    private var wordsHashMap: LinkedHashMap<String, Boolean> = linkedMapOf()
+    private var wordsHashMap: HashMap<String, Boolean> = linkedMapOf()
 
     private var lettersHashMap: LinkedHashMap<Int, Char> = linkedMapOf()
 
     private var letterStateHashMap: LinkedHashMap<Int, Boolean> = linkedMapOf()
 
-    fun setWordsHashMap(wordsHashMap: LinkedHashMap<String, Boolean>)
+    fun setWordsHashMap(wordsHashMap: HashMap<String, Boolean>)
     {
         this.wordsHashMap = wordsHashMap
     }
@@ -23,7 +23,7 @@ class GridModel
         this.letterStateHashMap = statesHashMap
     }
 
-    fun getWordsHashMap(): LinkedHashMap<String, Boolean>
+    fun getWordsHashMap(): HashMap<String, Boolean>
     {
         return wordsHashMap
     }

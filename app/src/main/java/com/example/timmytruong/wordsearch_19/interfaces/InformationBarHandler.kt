@@ -7,9 +7,9 @@ import android.widget.TextView
 
 interface InformationBarHandler
 {
-    fun setResetClickListener(onClickListener: View.OnClickListener, resetBTN: Button)
+    fun setResetClickListener(resetBTN: Button)
 
     fun setScoreTextView(score: Int, total: Int, scoreView: TextView)
 
-    fun setPlusClickListener(context: Context, words: LinkedHashMap<String, Boolean>, plusBTN: Button)
+    fun setPlusClickListener(context: Context, words: HashMap<String, Boolean>, plusBTN: Button)
 }

@@ -23,9 +23,6 @@ class DrawAdapter(private val context: Context,
                   private val informationBarViewModel: InformationBarViewModel,
                   private val informationBarHandler: InformationBarHandler)
 {
-
-    private val words: LinkedHashMap<String, Boolean> = gridViewModel.getWordsHashMap()
-
     private var currentPosition: Int? = -1
 
     private var centreX: Int? = -1
@@ -43,6 +40,8 @@ class DrawAdapter(private val context: Context,
     private var formedWord: String = ""
 
     private val onTouchListener = View.OnTouchListener { v: View, event: MotionEvent ->
+
+        val words: HashMap<String, Boolean> = gridViewModel.getWordsHashMap()
 
         val action: Int = event.actionMasked
 

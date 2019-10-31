@@ -6,7 +6,7 @@ import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
 class GridViewModel
 {
     private var gridModel: GridModel = GridModel()
-    private var wordsHashMap: LinkedHashMap<String, Boolean>
+    private var wordsHashMap: HashMap<String, Boolean>
     private var changedLetterStateHashMap: LinkedHashMap<Int, Boolean>
     private var lettersHashMap: LinkedHashMap<Int, Char>
 
@@ -17,9 +17,9 @@ class GridViewModel
         this.lettersHashMap = randomizeLetters()
     }
 
-    fun setDefaultWordsHashMap(): LinkedHashMap<String, Boolean>
+    fun setDefaultWordsHashMap(): HashMap<String, Boolean>
     {
-        val returnWords: LinkedHashMap<String, Boolean> = linkedMapOf()
+        val returnWords: HashMap<String, Boolean> = linkedMapOf()
 
         for (word in AppConstants.DEFAULT_WORDS)
         {
@@ -67,21 +67,13 @@ class GridViewModel
         gridModel.setWordsHashMap(wordsHashMap)
     }
 
-    fun setWordsHashMap(wordsHM: LinkedHashMap<String, Boolean>?)
+    fun setWordsHashMap(wordsHM: HashMap<String, Boolean>)
     {
-        if (wordsHM != null)
-        {
-            wordsHashMap = wordsHM
-        }
-        else
-        {
-            wordsHashMap = setDefaultWordsHashMap()
-        }
-
+        wordsHashMap = wordsHM
         saveData()
     }
 
-    fun getWordsHashMap(): LinkedHashMap<String, Boolean>
+    fun getWordsHashMap(): HashMap<String, Boolean>
     {
         return gridModel.getWordsHashMap()
     }
@@ -89,6 +81,7 @@ class GridViewModel
     fun setLetters()
     {
         setLetters(null, null)
+        setChangeLetterState(null)
     }
 
     fun setLetters(letterIndex: Int?, letter: Char?)
@@ -105,9 +98,21 @@ class GridViewModel
         saveData()
     }
 
-    fun setChangeLetterState(letterIndex: Int)
+    fun setChangeLetterState(letterIndex: Int?)
     {
-        changedLetterStateHashMap.put(letterIndex, true)
+        if (letterIndex != null)
+        {
+            changedLetterStateHashMap.put(letterIndex, true)
+        }
+        else
+        {
+            changedLetterStateHashMap.clear()
+            for (i in 0 until 100)
+            {
+                changedLetterStateHashMap.put(i, false)
+            }
+        }
+
         saveData()
     }
 

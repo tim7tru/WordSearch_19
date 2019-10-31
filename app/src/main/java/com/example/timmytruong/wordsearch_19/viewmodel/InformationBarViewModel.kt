@@ -29,7 +29,6 @@ class InformationBarViewModel
         }
 
         informationBarModel.setScore(score)
-
     }
 
     fun setTotalWords(totalWords: Int)
@@ -46,5 +45,4 @@ class InformationBarViewModel
     {
         return informationBarModel.getTotalWords()
     }
-
 }

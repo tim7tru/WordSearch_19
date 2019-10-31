@@ -27,9 +27,10 @@ class MainActivity : Activity()
 
     private val informationBarViewModel: InformationBarViewModel = InformationBarViewModel()
 
+    private lateinit var gridAdapter: GridAdapter
+
     private val gridHandler = object : GridHandler
     {
-
         override fun strikeOutWord(context: Context, word: String, tableLayout: TableLayout)
         {
             for (eachRow in 0 until tableLayout.childCount)
@@ -40,7 +41,7 @@ class MainActivity : Activity()
                 {
                     val tableRow: TableRow = rowView
 
-                    for (eachCell in 0 until 2)
+                    for (eachCell in 0 until rowView.childCount)
                     {
                         val textView: TextView = tableRow.getChildAt(eachCell) as TextView
 
@@ -69,6 +70,8 @@ class MainActivity : Activity()
 
         override fun setTableLayout(context: Context, keySet: Set<String>, tableLayout: TableLayout)
         {
+
+            tableLayout.removeAllViews()
 
             var tableRow = TableRow(context)
 
@@ -132,7 +135,8 @@ class MainActivity : Activity()
             builder.setMessage(R.string.win_message)
             builder.setPositiveButton(
                     R.string.play_again) { _, _ ->
-                TODO("Implement Reset")
+                gridAdapter.reset()
+                reset()
             }
             builder.setNegativeButton(R.string.cancel) { _, _ -> }
             builder.setIcon(android.R.drawable.ic_dialog_info)
@@ -148,9 +152,14 @@ class MainActivity : Activity()
 
     private var informationBarHandler: InformationBarHandler = object : InformationBarHandler
     {
-        override fun setResetClickListener(onClickListener: View.OnClickListener, resetBTN: Button)
+        override fun setResetClickListener(resetBTN: Button)
         {
-            resetBTN.setOnClickListener(onClickListener)
+            val resetClickListener = View.OnClickListener {
+                gridAdapter.reset()
+                reset()
+            }
+            resetBTN.setOnClickListener(resetClickListener)
+
         }
 
         override fun setScoreTextView(score: Int, total: Int, scoreView: TextView)
@@ -159,7 +168,7 @@ class MainActivity : Activity()
             scoreView.text = text
         }
 
-        override fun setPlusClickListener(context: Context, words: LinkedHashMap<String, Boolean>,
+        override fun setPlusClickListener(context: Context, words: HashMap<String, Boolean>,
                                           plusBTN: Button)
         {
             val plusClickListener: View.OnClickListener = View.OnClickListener {
@@ -176,29 +185,35 @@ class MainActivity : Activity()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val gridAdapter = GridAdapter(this, gridHandler, gridView as GridView,
+        gridAdapter = GridAdapter(this, gridHandler, gridView as GridView,
                 gridFrame as FrameLayout, wordTableLayout as TableLayout, score as TextView,
                 gridViewModel, informationBarHandler, informationBarViewModel)
-
         gridAdapter.setupWordGrid()
         gridAdapter.setupUI()
+
         informationBarHandler.setScoreTextView(informationBarViewModel.getScore(),
                 informationBarViewModel.getTotal(), score)
-//        TODO("INFORMATION BAR IMPLEMENTATION")
+        informationBarHandler.setResetClickListener(resetBTN)
+        informationBarHandler.setPlusClickListener(this, gridViewModel.getWordsHashMap(), plusBTN)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
     {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == 0 && data != null)
         {
-            val words: ArrayList<String> = data.getStringArrayListExtra(
-                    AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY)
-//            TODO("Implement Reset")
+            val words: HashMap<String, Boolean> = data.getSerializableExtra(
+                    AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY) as HashMap<String, Boolean>
+            gridAdapter.reset(words)
+            reset()
         }
-        else
-        {
-//            TODO("Implement Reset")
-        }
+    }
+
+    private fun reset()
+    {
+        informationBarViewModel.setScore(true)
+        informationBarHandler.setScoreTextView(informationBarViewModel.getScore(), informationBarViewModel.getTotal(), score)
+        gridHandler.removeSearchView(this, 1, gridFrame.childCount, gridFrame)
     }
 }

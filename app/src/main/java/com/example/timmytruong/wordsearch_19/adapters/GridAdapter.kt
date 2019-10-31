@@ -27,26 +27,27 @@ class GridAdapter(private val context: Context,
             wordTableLayout, scoreTextView, gridHandler, gridViewModel, informationBarViewModel,
             informationBarHandler)
 
-    fun setupGrid()
+    private fun setupGrid()
     {
         gridViewModel.setLetters()
     }
 
-    fun setupWords()
+    fun reset(newWords: HashMap<String, Boolean>)
     {
-        setupWords(null)
+        setupGrid()
+        setupWords(newWords)
+        setupWordGrid()
+        setupUI()
     }
 
-    private fun setupWords(newWords: LinkedHashMap<String, Boolean>?)
+    fun reset()
     {
-        if (newWords == null)
-        {
-            gridViewModel.setWordsHashMap(null)
-        }
-        else
-        {
-            gridViewModel.setWordsHashMap(newWords)
-        }
+        reset(gridViewModel.getWordsHashMap())
+    }
+
+    private fun setupWords(newWords: HashMap<String, Boolean>)
+    {
+        gridViewModel.setWordsHashMap(newWords)
     }
 
     private fun checkIsSizedCorrectly(startIndexOfWord: Int, lengthOfWord: Int,

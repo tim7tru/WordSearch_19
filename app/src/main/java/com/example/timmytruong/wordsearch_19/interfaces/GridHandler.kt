@@ -11,7 +11,8 @@ interface GridHandler
 {
     fun strikeOutWord(context: Context, word: String, tableLayout: TableLayout)
 
-    fun setOnTouchListener(context: Context, onTouchListener: View.OnTouchListener, gridView: GridView)
+    fun setOnTouchListener(context: Context, onTouchListener: View.OnTouchListener,
+                           gridView: GridView)
 
     fun setLetters(context: Context, letterAdapter: LetterAdapter, gridView: GridView)
 
@@ -19,7 +20,8 @@ interface GridHandler
 
     fun clearTableLayout(context: Context, tableLayout: TableLayout)
 
-    fun removeSearchView(context: Context, startViewCount: Int, endViewCount: Int, gridFrame: FrameLayout)
+    fun removeSearchView(context: Context, startViewCount: Int, endViewCount: Int,
+                         gridFrame: FrameLayout)
 
     fun displayWinDialogue(context: Context)
 

@@ -1,5 +1,6 @@
 package com.example.timmytruong.wordsearch_19.utils.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -8,19 +9,9 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import com.example.timmytruong.wordsearch_19.R
 
-class LetterAdapter(context: Context, letters: LinkedHashMap<Int, Char>) : BaseAdapter()
+class LetterAdapter(val context: Context, private val letters: LinkedHashMap<Int, Char>) :
+        BaseAdapter()
 {
-
-    val letters: LinkedHashMap<Int, Char>
-
-    val context: Context
-
-    init
-    {
-        this.context = context
-        this.letters = letters
-    }
-
     override fun getCount(): Int
     {
         return letters.keys.size
@@ -36,9 +27,10 @@ class LetterAdapter(context: Context, letters: LinkedHashMap<Int, Char>) : BaseA
         return position.toLong()
     }
 
+    @SuppressLint("InflateParams")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View
     {
-        var newConvertView: View? = convertView
+        var newConvertView = convertView
         if (convertView == null)
         {
             val layoutInflater: LayoutInflater = LayoutInflater.from(context)
@@ -47,7 +39,7 @@ class LetterAdapter(context: Context, letters: LinkedHashMap<Int, Char>) : BaseA
 
         val letter: TextView = newConvertView!!.findViewById(R.id.letter)
         letter.tag = position
-        letter.text = letters.get(position).toString()
+        letter.text = letters[position].toString()
 
         return newConvertView
     }

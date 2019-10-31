@@ -1,66 +1,31 @@
 package com.example.timmytruong.wordsearch_19.adapters
 
 import android.content.Context
-import android.icu.text.IDNA
-import android.view.MotionEvent
-import android.view.View
 import android.widget.FrameLayout
 import android.widget.GridView
 import android.widget.TableLayout
 import android.widget.TextView
 import com.example.timmytruong.wordsearch_19.interfaces.GridHandler
 import com.example.timmytruong.wordsearch_19.interfaces.InformationBarHandler
-import com.example.timmytruong.wordsearch_19.utils.AppConstants
-import com.example.timmytruong.wordsearch_19.utils.DrawUtils
+import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
 import com.example.timmytruong.wordsearch_19.utils.ui.LetterAdapter
 import com.example.timmytruong.wordsearch_19.viewmodel.GridViewModel
 import com.example.timmytruong.wordsearch_19.viewmodel.InformationBarViewModel
-import java.util.ArrayList
-import kotlin.properties.Delegates
 import kotlin.random.Random
 
-class GridAdapter(context: Context,
-                  gridHandler: GridHandler,
-                  gridView: GridView,
+class GridAdapter(private val context: Context,
+                  private val gridHandler: GridHandler,
+                  private val gridView: GridView,
                   gridFrameLayout: FrameLayout,
-                  wordTableLayout: TableLayout,
+                  private val wordTableLayout: TableLayout,
                   scoreTextView: TextView,
-                  gridViewModel: GridViewModel,
+                  private val gridViewModel: GridViewModel,
                   informationBarHandler: InformationBarHandler,
-                  informationBarViewModel: InformationBarViewModel)
+                  private val informationBarViewModel: InformationBarViewModel)
 {
-    private val context: Context
-
-    private val gridHandler: GridHandler
-
-    private val gridView: GridView
-
-    private val gridFrameLayout: FrameLayout
-
-    private val wordTableLayout: TableLayout
-
-    private val scoreTextView: TextView
-
-    private val gridViewModel: GridViewModel
-
-    private val informationBarViewModel: InformationBarViewModel
-
-    private val informationBarHandler: InformationBarHandler
-
-    init
-    {
-        this.context = context
-        this.gridHandler = gridHandler
-        this.gridView = gridView
-        this.gridFrameLayout = gridFrameLayout
-        this.wordTableLayout = wordTableLayout
-        this.scoreTextView = scoreTextView
-        this.informationBarHandler = informationBarHandler
-        this.informationBarViewModel = informationBarViewModel
-        this.gridViewModel = gridViewModel
-    }
-
-    private val drawAdapter: DrawAdapter = DrawAdapter(context, gridFrameLayout, gridView, wordTableLayout, scoreTextView, gridHandler, gridViewModel, informationBarViewModel, informationBarHandler)
+    private val drawAdapter: DrawAdapter = DrawAdapter(context, gridFrameLayout,
+            wordTableLayout, scoreTextView, gridHandler, gridViewModel, informationBarViewModel,
+            informationBarHandler)
 
     fun setupGrid()
     {
@@ -72,7 +37,7 @@ class GridAdapter(context: Context,
         setupWords(null)
     }
 
-    fun setupWords(newWords: LinkedHashMap<String, Boolean>?)
+    private fun setupWords(newWords: LinkedHashMap<String, Boolean>?)
     {
         if (newWords == null)
         {
@@ -84,7 +49,8 @@ class GridAdapter(context: Context,
         }
     }
 
-    private fun checkIsSizedCorrectly(startIndexOfWord: Int, lengthOfWord: Int, directionOfWord: Int): Boolean
+    private fun checkIsSizedCorrectly(startIndexOfWord: Int, lengthOfWord: Int,
+                                      directionOfWord: Int): Boolean
     {
         if (startIndexOfWord >= 0 && directionOfWord <= 7)
         {
@@ -103,7 +69,8 @@ class GridAdapter(context: Context,
         return false
     }
 
-    private fun checkIsPositionedCorrectly(word: String, startIndexOfWord: Int, lengthOfWord: Int, directionOfWord: Int): Boolean
+    private fun checkIsPositionedCorrectly(word: String, startIndexOfWord: Int, lengthOfWord: Int,
+                                           directionOfWord: Int): Boolean
     {
         var canBePositioned = false
 
@@ -133,20 +100,23 @@ class GridAdapter(context: Context,
         return canBePositioned
     }
 
-    private fun letterConflictChecker(word: String, letterIndex: Int, letterPositionInWord: Int): Boolean
+    private fun letterConflictChecker(word: String, letterIndex: Int,
+                                      letterPositionInWord: Int): Boolean
     {
         if (letterIndex <= AppConstants.NUMBER_OF_CELLS)
         {
-            when (gridViewModel.getChangeLetterState().values.elementAt(letterIndex))
+            return when (gridViewModel.getChangeLetterState().values.elementAt(letterIndex))
             {
-                true -> return (gridViewModel.getLettersHashMap().values.elementAt(letterIndex) == word.toCharArray()[letterPositionInWord])
-                false -> return true
+                true -> (gridViewModel.getLettersHashMap().values.elementAt(
+                        letterIndex) == word.toCharArray()[letterPositionInWord])
+                false -> true
             }
         }
         return false
     }
 
-    private fun changeLetterArray(startIndexOfWord: Int, lengthOfWord: Int, directionOfWord: Int, word: String)
+    private fun changeLetterArray(startIndexOfWord: Int, lengthOfWord: Int, directionOfWord: Int,
+                                  word: String)
     {
         var letterIndex: Int = startIndexOfWord
 
@@ -175,11 +145,13 @@ class GridAdapter(context: Context,
         {
             val lengthOfWord: Int = word.length
 
-            var directionOfWord: Int = Random.nextInt(AppConstants.NUMBER_OF_DIRECTIONS)
+            var directionOfWord: Int = Random.nextInt(
+                    AppConstants.NUMBER_OF_DIRECTIONS)
 
-            var startIndexOfWord: Int = Random.nextInt(AppConstants.NUMBER_OF_CELLS)
+            var startIndexOfWord: Int = Random.nextInt(
+                    AppConstants.NUMBER_OF_CELLS)
 
-            var isPositionedCorrectly = false
+            var isPositionedCorrectly: Boolean
 
             var isSizedCorrectly = false
 
@@ -187,12 +159,14 @@ class GridAdapter(context: Context,
 
             while (!isSizedCorrectly)
             {
-                isSizedCorrectly = checkIsSizedCorrectly(startIndexOfWord, lengthOfWord, directionOfWord)
+                isSizedCorrectly = checkIsSizedCorrectly(startIndexOfWord, lengthOfWord,
+                        directionOfWord)
 
                 if (isSizedCorrectly)
                 {
 
-                    isPositionedCorrectly = checkIsPositionedCorrectly(word, startIndexOfWord, lengthOfWord, directionOfWord)
+                    isPositionedCorrectly = checkIsPositionedCorrectly(word, startIndexOfWord,
+                            lengthOfWord, directionOfWord)
 
                     if (isPositionedCorrectly)
                     {
@@ -217,8 +191,10 @@ class GridAdapter(context: Context,
                 }
                 else if (count == 8)
                 {
-                    startIndexOfWord = Random.nextInt(AppConstants.NUMBER_OF_CELLS)
-                    directionOfWord = Random.nextInt(AppConstants.NUMBER_OF_DIRECTIONS)
+                    startIndexOfWord = Random.nextInt(
+                            AppConstants.NUMBER_OF_CELLS)
+                    directionOfWord = Random.nextInt(
+                            AppConstants.NUMBER_OF_DIRECTIONS)
                     count = 0
                 }
             }

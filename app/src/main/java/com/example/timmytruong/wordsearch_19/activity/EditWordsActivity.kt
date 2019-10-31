@@ -1,13 +1,13 @@
 package com.example.timmytruong.wordsearch_19.activity
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import com.example.timmytruong.wordsearch_19.R
-import com.example.timmytruong.wordsearch_19.utils.AppConstants
+import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
 import kotlinx.android.synthetic.main.activity_edit_words.*
 
 class EditWordsActivity : Activity()
@@ -16,14 +16,16 @@ class EditWordsActivity : Activity()
 
     private var editTexts: ArrayList<EditText> = arrayListOf()
 
+    @SuppressLint("DefaultLocale")
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_words)
 
-        val intent: Intent = getIntent()
+        val intent: Intent = intent
 
-        words = intent.getSerializableExtra(AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY) as LinkedHashMap<String, Boolean>
+        words = intent.getSerializableExtra(
+                AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY) as LinkedHashMap<String, Boolean>
 
         editTexts.add(editText)
         editTexts.add(editText2)
@@ -36,31 +38,34 @@ class EditWordsActivity : Activity()
 
         for (i in 0 until words.size)
         {
-            editTexts.get(i).setText(words.keys.elementAt(i))
+            editTexts[i].setText(words.keys.elementAt(i))
         }
 
-        cancelBTN.setOnClickListener { v: View ->
+        cancelBTN.setOnClickListener {
             setResult(1)
             finish()
         }
 
-        saveBTN.setOnClickListener { v: View ->
+        saveBTN.setOnClickListener {
             words.clear()
 
             for (i in 0 until editTexts.size)
             {
-                if (!editTexts.get(i).text.toString().equals("") && editTexts.get(i).text.toString().length <= 10)
+                if (editTexts[i].text.toString() != "" && editTexts[i].text.toString().length <= 10)
                 {
-                    words.put(editTexts.get(i).text.toString().toUpperCase(), false)
+                    words[editTexts[i].text.toString().toUpperCase()] = false
                 }
-                else if (editTexts.get(i).text.toString().length > 10)
+                else if (editTexts[i].text.toString().length > 10)
                 {
-                    Toast.makeText(this, editTexts.get(i).text.toString() + " is too long, please keep words under 10 characters.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this,
+                            editTexts[i].text.toString() + " is too long, please keep words under 10 characters.",
+                            Toast.LENGTH_SHORT).show()
                 }
             }
 
-            val intentWithResult: Intent = Intent()
-            intentWithResult.putExtra(AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY, words)
+            val intentWithResult = Intent()
+            intentWithResult.putExtra(
+                    AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY, words)
             setResult(0, intentWithResult)
             finish()
         }

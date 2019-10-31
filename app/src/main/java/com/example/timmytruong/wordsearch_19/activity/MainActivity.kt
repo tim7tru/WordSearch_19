@@ -1,5 +1,6 @@
 package com.example.timmytruong.wordsearch_19.activity
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -14,7 +15,7 @@ import com.example.timmytruong.wordsearch_19.R
 import com.example.timmytruong.wordsearch_19.adapters.GridAdapter
 import com.example.timmytruong.wordsearch_19.interfaces.GridHandler
 import com.example.timmytruong.wordsearch_19.interfaces.InformationBarHandler
-import com.example.timmytruong.wordsearch_19.utils.AppConstants
+import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
 import com.example.timmytruong.wordsearch_19.utils.ui.LetterAdapter
 import com.example.timmytruong.wordsearch_19.viewmodel.GridViewModel
 import com.example.timmytruong.wordsearch_19.viewmodel.InformationBarViewModel
@@ -43,7 +44,7 @@ class MainActivity : Activity()
                     {
                         val textView: TextView = tableRow.getChildAt(eachCell) as TextView
 
-                        if (textView.text.toString().equals(word))
+                        if (textView.text.toString() == word)
                         {
                             val text: TextView = textView
 
@@ -54,6 +55,7 @@ class MainActivity : Activity()
             }
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         override fun setOnTouchListener(context: Context, onTouchListener: View.OnTouchListener,
                                         gridView: GridView)
         {
@@ -67,11 +69,10 @@ class MainActivity : Activity()
 
         override fun setTableLayout(context: Context, keySet: Set<String>, tableLayout: TableLayout)
         {
-            var wordCounter: Int = 0
 
-            var tableRow: TableRow = TableRow(context)
+            var tableRow = TableRow(context)
 
-            for (word in keySet)
+            for ((wordCounter, word) in keySet.withIndex())
             {
                 if (wordCounter % 2 == 0)
                 {
@@ -83,7 +84,7 @@ class MainActivity : Activity()
                     tableRow.layoutParams = rowParams
                 }
 
-                val wordText: TextView = TextView(context)
+                val wordText = TextView(context)
 
                 val textParams: TableRow.LayoutParams = TableRow.LayoutParams()
                 textParams.weight = 0.5.toFloat()
@@ -109,7 +110,6 @@ class MainActivity : Activity()
 
                 tableLayout.addView(tableRow)
 
-                wordCounter++
             }
         }
 
@@ -131,7 +131,7 @@ class MainActivity : Activity()
             builder.setTitle(R.string.win_title)
             builder.setMessage(R.string.win_message)
             builder.setPositiveButton(
-                    R.string.play_again) { dialog, which ->
+                    R.string.play_again) { _, _ ->
                 TODO("Implement Reset")
             }
             builder.setNegativeButton(R.string.cancel) { _, _ -> }
@@ -146,7 +146,7 @@ class MainActivity : Activity()
         }
     }
 
-    private var informationBarHandler = object : InformationBarHandler
+    private var informationBarHandler: InformationBarHandler = object : InformationBarHandler
     {
         override fun setResetClickListener(onClickListener: View.OnClickListener, resetBTN: Button)
         {
@@ -159,12 +159,12 @@ class MainActivity : Activity()
             scoreView.text = text
         }
 
-        override fun setPlusClickListener(context: Context, wordsHM: LinkedHashMap<String, Boolean>,
+        override fun setPlusClickListener(context: Context, words: LinkedHashMap<String, Boolean>,
                                           plusBTN: Button)
         {
-            val plusClickListener: View.OnClickListener = View.OnClickListener { v: View ->
+            val plusClickListener: View.OnClickListener = View.OnClickListener {
                 val intent = Intent(context, EditWordsActivity::class.java)
-                intent.putExtra(AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY, wordsHM)
+                intent.putExtra(AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY, words)
                 startActivityForResult(intent, 0)
             }
             plusBTN.setOnClickListener(plusClickListener)
@@ -182,7 +182,8 @@ class MainActivity : Activity()
 
         gridAdapter.setupWordGrid()
         gridAdapter.setupUI()
-        informationBarHandler.setScoreTextView(informationBarViewModel.getScore(), informationBarViewModel.getTotal(), score)
+        informationBarHandler.setScoreTextView(informationBarViewModel.getScore(),
+                informationBarViewModel.getTotal(), score)
 //        TODO("INFORMATION BAR IMPLEMENTATION")
     }
 

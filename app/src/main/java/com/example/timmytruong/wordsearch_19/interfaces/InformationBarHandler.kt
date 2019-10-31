@@ -11,5 +11,5 @@ interface InformationBarHandler
 
     fun setScoreTextView(score: Int, total: Int, scoreView: TextView)
 
-    fun setPlusClickListener(context: Context, wordsAL: LinkedHashMap<String, Boolean>, plusBTN: Button)
+    fun setPlusClickListener(context: Context, words: LinkedHashMap<String, Boolean>, plusBTN: Button)
 }

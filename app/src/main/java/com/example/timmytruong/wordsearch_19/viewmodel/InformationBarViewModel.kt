@@ -1,9 +1,9 @@
 package com.example.timmytruong.wordsearch_19.viewmodel
 
 import com.example.timmytruong.wordsearch_19.models.InformationBarModel
-import com.example.timmytruong.wordsearch_19.provider.InformationBarProvider
 
-class InformationBarViewModel() {
+class InformationBarViewModel
+{
 
     private val informationBarModel: InformationBarModel = InformationBarModel()
 
@@ -18,10 +18,12 @@ class InformationBarViewModel() {
     {
         when (resetScore)
         {
-            true -> {
+            true ->
+            {
                 score = 0
             }
-            false -> {
+            false ->
+            {
                 score++
             }
         }

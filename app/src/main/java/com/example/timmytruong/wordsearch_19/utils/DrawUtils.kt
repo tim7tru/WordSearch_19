@@ -5,7 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.view.View
-import kotlin.properties.Delegates
+import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
 
 class DrawUtils(context: Context) : View(context)
 {
@@ -37,13 +37,16 @@ class DrawUtils(context: Context) : View(context)
         endingX = endX
         endingY = endY
 
-        when (colour) {
-            0 -> {
+        when (colour)
+        {
+            0 ->
+            {
                 paint.strokeWidth = AppConstants.PAINT_LINE_WIDTH_FOUND
                 paint.color = Color.YELLOW
                 paint.alpha = 90
             }
-            1 -> {
+            1 ->
+            {
                 paint.color = Color.GREEN
                 paint.alpha = 50
             }
@@ -54,9 +57,6 @@ class DrawUtils(context: Context) : View(context)
 
     override fun onDraw(canvas: Canvas?)
     {
-        if (canvas != null)
-        {
-            canvas.drawLine(startingX, startingY, endingX, endingY, paint)
-        }
+        canvas?.drawLine(startingX, startingY, endingX, endingY, paint)
     }
 }

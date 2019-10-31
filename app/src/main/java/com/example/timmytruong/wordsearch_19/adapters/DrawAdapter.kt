@@ -13,35 +13,16 @@ import com.example.timmytruong.wordsearch_19.interfaces.InformationBarHandler
 import com.example.timmytruong.wordsearch_19.utils.DrawUtils
 import com.example.timmytruong.wordsearch_19.viewmodel.GridViewModel
 import com.example.timmytruong.wordsearch_19.viewmodel.InformationBarViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 
-class DrawAdapter(context: Context,
-                  gridFrame: FrameLayout,
-                  gridView: GridView,
-                  wordsTableLayout: TableLayout,
-                  scoreTextView: TextView,
-                  gridHandler: GridHandler,
-                  gridViewModel: GridViewModel,
-                  informationBarViewModel: InformationBarViewModel,
-                  informationBarHandler: InformationBarHandler)
+class DrawAdapter(private val context: Context,
+                  private val gridFrame: FrameLayout,
+                  private val wordsTableLayout: TableLayout,
+                  private val scoreTextView: TextView,
+                  private val gridHandler: GridHandler,
+                  private val gridViewModel: GridViewModel,
+                  private val informationBarViewModel: InformationBarViewModel,
+                  private val informationBarHandler: InformationBarHandler)
 {
-    private val context: Context
-
-    private val gridFrame: FrameLayout
-
-    private val gridView: GridView
-
-    private val wordsTableLayout: TableLayout
-
-    private val scoreTextView: TextView
-
-    private val gridHandler: GridHandler
-
-    private val gridViewModel: GridViewModel
-
-    private val informationBarViewModel: InformationBarViewModel
-
-    private val informationBarHandler: InformationBarHandler
 
     private val words: LinkedHashMap<String, Boolean> = gridViewModel.getWordsHashMap()
 
@@ -61,19 +42,6 @@ class DrawAdapter(context: Context,
 
     private var formedWord: String = ""
 
-    init
-    {
-        this.context = context
-        this.gridFrame = gridFrame
-        this.gridView = gridView
-        this.wordsTableLayout = wordsTableLayout
-        this.scoreTextView = scoreTextView
-        this.gridHandler = gridHandler
-        this.gridViewModel = gridViewModel
-        this.informationBarHandler = informationBarHandler
-        this.informationBarViewModel = informationBarViewModel
-    }
-
     private val onTouchListener = View.OnTouchListener { v: View, event: MotionEvent ->
 
         val action: Int = event.actionMasked
@@ -92,7 +60,7 @@ class DrawAdapter(context: Context,
 
         var drawUtils: DrawUtils
 
-        if (position >= 0 && position < 100)
+        if (position in 0..99)
         {
             val cellView: TextView = grid.findViewWithTag(position)
 
@@ -129,14 +97,17 @@ class DrawAdapter(context: Context,
                             {
                                 startViewNumber = gridFrame.childCount
 
-                                startCentreX = globalX + cellView.getWidth() / 2
-                                startCentreY = globalY + cellView.getHeight() / 2
+                                startCentreX = globalX + cellView.width / 2
+                                startCentreY = globalY + cellView.height / 2
 
-                                drawUtils.drawLine(startCentreX!!.toFloat(), startCentreY!!.toFloat(), centreX!!.toFloat(), centreY!!.toFloat(), 0)
+                                drawUtils.drawLine(startCentreX!!.toFloat(),
+                                        startCentreY!!.toFloat(), centreX!!.toFloat(),
+                                        centreY!!.toFloat(), 0)
                             }
                             MotionEvent.ACTION_MOVE ->
                             {
-                                drawUtils.drawLine(centreX!!.toFloat(), centreY!!.toFloat(), centreX!!.toFloat(), centreY!!.toFloat(), 0)
+                                drawUtils.drawLine(centreX!!.toFloat(), centreY!!.toFloat(),
+                                        centreX!!.toFloat(), centreY!!.toFloat(), 0)
                             }
                         }
                     }
@@ -146,19 +117,21 @@ class DrawAdapter(context: Context,
                 {
                     endViewNumber = gridFrame.childCount
 
-                    if (words.contains(formedWord) && !(words.get(formedWord) as Boolean))
+                    if (words.contains(formedWord) && !(words[formedWord] as Boolean))
                     {
                         informationBarViewModel.setScore(false)
 
-                        informationBarHandler.setScoreTextView(informationBarViewModel.getScore(), informationBarViewModel.getTotal(), scoreTextView)
+                        informationBarHandler.setScoreTextView(informationBarViewModel.getScore(),
+                                informationBarViewModel.getTotal(), scoreTextView)
 
                         drawUtils = DrawUtils(context)
 
                         gridFrame.addView(drawUtils)
 
-                        drawUtils.drawLine(startCentreX!!.toFloat(), startCentreY!!.toFloat(), centreX!!.toFloat(), centreY!!.toFloat(), 1)
+                        drawUtils.drawLine(startCentreX!!.toFloat(), startCentreY!!.toFloat(),
+                                centreX!!.toFloat(), centreY!!.toFloat(), 1)
 
-                        words.put(formedWord, true)
+                        words[formedWord] = true
 
                         gridViewModel.setWordsHashMap(words)
 
@@ -170,7 +143,8 @@ class DrawAdapter(context: Context,
                         }
                     }
 
-                    gridHandler.removeSearchView(context, startViewNumber!!.minus(1), endViewNumber!!, gridFrame)
+                    gridHandler.removeSearchView(context, startViewNumber!!.minus(1),
+                            endViewNumber!!, gridFrame)
 
                     formedWord = ""
                 }
@@ -184,7 +158,7 @@ class DrawAdapter(context: Context,
         {
             endViewNumber = gridFrame.childCount
 
-            if (words.contains(formedWord) && !(words.get(formedWord) as Boolean))
+            if (words.contains(formedWord) && !(words[formedWord] as Boolean))
             {
                 informationBarViewModel.setScore(false)
 
@@ -195,9 +169,10 @@ class DrawAdapter(context: Context,
 
                 gridFrame.addView(drawUtils)
 
-                drawUtils.drawLine(startCentreX!!.toFloat(), startCentreY!!.toFloat(), centreX!!.toFloat(), centreY!!.toFloat(), 1)
+                drawUtils.drawLine(startCentreX!!.toFloat(), startCentreY!!.toFloat(),
+                        centreX!!.toFloat(), centreY!!.toFloat(), 1)
 
-                words.put(formedWord, true)
+                words[formedWord] = true
 
                 gridViewModel.setWordsHashMap(words)
 
@@ -209,7 +184,8 @@ class DrawAdapter(context: Context,
                 }
             }
 
-            gridHandler.removeSearchView(context, startViewNumber!!.minus(1), endViewNumber!!, gridFrame)
+            gridHandler.removeSearchView(context, startViewNumber!!.minus(1), endViewNumber!!,
+                    gridFrame)
 
             formedWord = ""
         }

@@ -1,6 +1,6 @@
 package com.example.timmytruong.wordsearch_19.provider
 
-import com.example.timmytruong.wordsearch_19.utils.AppConstants
+import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
 
 class GridProvider
 {

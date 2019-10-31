@@ -1,8 +1,7 @@
 package com.example.timmytruong.wordsearch_19.viewmodel
 
-import android.view.View
 import com.example.timmytruong.wordsearch_19.models.GridModel
-import com.example.timmytruong.wordsearch_19.utils.AppConstants
+import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
 
 class GridViewModel
 {

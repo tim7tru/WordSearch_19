@@ -1,4 +1,4 @@
-package com.example.timmytruong.wordsearch_19.utils
+package com.example.timmytruong.wordsearch_19.utils.constant
 
 import android.content.res.Resources
 import com.example.timmytruong.wordsearch_19.R

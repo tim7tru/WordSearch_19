@@ -39,19 +39,18 @@ class DrawUtils(context: Context) : View(context)
 
         when (colour)
         {
-            0 ->
+            AppConstants.PAINT_COLOUR_YELLOW ->
             {
                 paint.strokeWidth = AppConstants.PAINT_LINE_WIDTH_FOUND
                 paint.color = Color.YELLOW
                 paint.alpha = 90
             }
-            1 ->
+            AppConstants.PAINT_COLOUR_GREEN ->
             {
                 paint.color = Color.GREEN
                 paint.alpha = 50
             }
         }
-
         invalidate()
     }
 

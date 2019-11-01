@@ -1,8 +1,10 @@
 package com.example.timmytruong.wordsearch_19.utils.constant
 
+import android.graphics.Color
+
 object AppConstants
 {
-     val DEFAULT_WORDS = arrayOf("KOTLIN", "SWIFT", "OBJECTIVEC", "MOBILE", "JAVA", "VARIABLE")
+     val DEFAULT_WORDS = arrayOf("OBJECTIVEC", "VARIABLE", "KOTLIN", "MOBILE", "SWIFT", "JAVA")
 
      const val INTENT_EXTRA_WORDS_ARRAY_LIST_KEY = "words"
 
@@ -31,4 +33,8 @@ object AppConstants
      const val PAINT_LINE_WIDTH_SEARCH = 30.0f
 
      const val PAINT_LINE_WIDTH_FOUND = 55.0f
+
+     const val PAINT_COLOUR_YELLOW = Color.YELLOW
+
+     const val PAINT_COLOUR_GREEN = Color.GREEN
 }

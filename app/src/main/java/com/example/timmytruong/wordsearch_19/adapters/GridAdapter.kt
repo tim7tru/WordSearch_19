@@ -42,7 +42,13 @@ class GridAdapter(private val context: Context,
 
     fun reset()
     {
-        reset(gridViewModel.getWordsHashMap())
+        val resetHashMap: HashMap<String, Boolean> = gridViewModel.getWordsHashMap()
+
+        for (word in 0 until resetHashMap.size)
+        {
+            resetHashMap[gridViewModel.getWordsHashMap().keys.elementAt(word)] = false
+        }
+        reset(resetHashMap)
     }
 
     private fun setupWords(newWords: HashMap<String, Boolean>)

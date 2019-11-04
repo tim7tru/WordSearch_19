@@ -11,8 +11,11 @@ import android.widget.TextView
 import com.example.timmytruong.wordsearch_19.interfaces.GridHandler
 import com.example.timmytruong.wordsearch_19.interfaces.InformationBarHandler
 import com.example.timmytruong.wordsearch_19.utils.DrawUtils
+import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
 import com.example.timmytruong.wordsearch_19.viewmodel.GridViewModel
 import com.example.timmytruong.wordsearch_19.viewmodel.InformationBarViewModel
+import java.util.*
+import kotlin.math.abs
 
 class DrawAdapter(private val context: Context,
                   private val gridFrame: FrameLayout,
@@ -23,7 +26,14 @@ class DrawAdapter(private val context: Context,
                   private val informationBarViewModel: InformationBarViewModel,
                   private val informationBarHandler: InformationBarHandler)
 {
-    private var currentPosition: Int? = -1
+
+    private var initialPosition: Int = -1
+
+    private var currentPosition: Int = -1
+
+    private var allDirectionPossibilities: ArrayList<Int> = arrayListOf()
+
+    private var directionPosition: Int = -1
 
     private var centreX: Int? = -1
 
@@ -33,11 +43,9 @@ class DrawAdapter(private val context: Context,
 
     private var startCentreY: Int? = -1
 
-    private var endViewNumber: Int? = -1
+    private var endViewNumber: Int = -1
 
-    private var startViewNumber: Int? = -1
-
-    private var formedWord: String = ""
+    private var startViewNumber: Int = -1
 
     private val onTouchListener = View.OnTouchListener { v: View, event: MotionEvent ->
 
@@ -57,8 +65,6 @@ class DrawAdapter(private val context: Context,
 
         val globalY: Int?
 
-        var drawUtils: DrawUtils
-
         if (position in 0..99)
         {
             val cellView: TextView = grid.findViewWithTag(position)
@@ -75,10 +81,6 @@ class DrawAdapter(private val context: Context,
             centreX = globalX + cellView.width / 2
             centreY = globalY + cellView.height / 2
 
-            drawUtils = DrawUtils(context)
-
-            gridFrame.addView(drawUtils)
-
             when (action)
             {
                 MotionEvent.ACTION_DOWN,
@@ -88,112 +90,321 @@ class DrawAdapter(private val context: Context,
                     {
                         v.parent.requestDisallowInterceptTouchEvent(true)
 
-                        formedWord += cellView.text.toString()
-
                         when (action)
                         {
                             MotionEvent.ACTION_DOWN ->
                             {
-                                startViewNumber = gridFrame.childCount
+                                initialPosition = position
+
+                                allDirectionPossibilities = findAllDirectionPossibilities(initialPosition)
+
+                                directionPosition = -1
 
                                 startCentreX = globalX + cellView.width / 2
+
                                 startCentreY = globalY + cellView.height / 2
 
-                                drawUtils.drawLine(startCentreX!!.toFloat(),
-                                        startCentreY!!.toFloat(), centreX!!.toFloat(),
-                                        centreY!!.toFloat(), 0)
+                                drawLine(startCentreX, startCentreY, startCentreX, startCentreY, AppConstants.PAINT_COLOUR_YELLOW)
+
+                                startViewNumber = gridFrame.childCount - 1
+
+                                currentPosition = position
                             }
                             MotionEvent.ACTION_MOVE ->
                             {
-                                drawUtils.drawLine(centreX!!.toFloat(), centreY!!.toFloat(),
-                                        centreX!!.toFloat(), centreY!!.toFloat(), 0)
+                                if (allDirectionPossibilities.contains(position))
+                                {
+                                    gridHandler.removeSearchView(context, startViewNumber, gridFrame.childCount, gridFrame)
+
+                                    directionPosition = directionFinder(position, initialPosition)
+
+                                    drawLine(startCentreX, startCentreY, centreX, centreY, AppConstants.PAINT_COLOUR_YELLOW)
+
+                                    currentPosition = position
+                                }
                             }
                         }
                     }
-                    currentPosition = position
                 }
-                MotionEvent.ACTION_UP ->
-                {
-                    endViewNumber = gridFrame.childCount
-
-                    if (words.contains(formedWord) && !(words[formedWord] as Boolean))
+                MotionEvent.ACTION_UP -> {
+                    if (startViewNumber != -1)
                     {
-                        informationBarViewModel.setScore(false)
+                        val formedWord = getWord(currentPosition, initialPosition)
 
-                        informationBarHandler.setScoreTextView(informationBarViewModel.getScore(),
-                                informationBarViewModel.getTotal(), scoreTextView)
+                        endViewNumber = gridFrame.childCount
 
-                        drawUtils = DrawUtils(context)
+                        gridHandler.removeSearchView(context, startViewNumber, endViewNumber, gridFrame)
 
-                        gridFrame.addView(drawUtils)
-
-                        drawUtils.drawLine(startCentreX!!.toFloat(), startCentreY!!.toFloat(),
-                                centreX!!.toFloat(), centreY!!.toFloat(), 1)
-
-                        words[formedWord] = true
-
-                        gridViewModel.setWordsHashMap(words)
-
-                        gridHandler.strikeOutWord(context, formedWord, wordsTableLayout)
-
-                        if (informationBarViewModel.getScore() == informationBarViewModel.getTotal())
+                        if (formedWord != null && words.contains(formedWord) && !(words[formedWord] as Boolean))
                         {
-                            gridHandler.displayWinDialogue(context)
+                            scoreHandler()
+
+                            drawLine(startCentreX, startCentreY, centreX, centreY, AppConstants.PAINT_COLOUR_GREEN)
+
+                            wordsHandler(words, formedWord)
+
+                            winHandler()
                         }
                     }
-
-                    gridHandler.removeSearchView(context, startViewNumber!!.minus(1),
-                            endViewNumber!!, gridFrame)
-
-                    formedWord = ""
-                }
-                MotionEvent.ACTION_CANCEL ->
-                {
-                    formedWord = ""
                 }
             }
         }
         else if (position == -1 && action == MotionEvent.ACTION_UP)
         {
+            val formedWord = getWord(currentPosition, initialPosition)
+
             endViewNumber = gridFrame.childCount
 
-            if (words.contains(formedWord) && !(words[formedWord] as Boolean))
+            gridHandler.removeSearchView(context, startViewNumber, endViewNumber, gridFrame)
+
+            if (formedWord != null && words.contains(formedWord) && !(words[formedWord] as Boolean))
             {
-                informationBarViewModel.setScore(false)
+                scoreHandler()
 
-                informationBarHandler.setScoreTextView(informationBarViewModel.getScore(),
-                        informationBarViewModel.getTotal(), scoreTextView)
+                drawLine(startCentreX, startCentreY, centreX, centreY, AppConstants.PAINT_COLOUR_GREEN)
 
-                drawUtils = DrawUtils(context)
+                wordsHandler(words, formedWord)
 
-                gridFrame.addView(drawUtils)
-
-                drawUtils.drawLine(startCentreX!!.toFloat(), startCentreY!!.toFloat(),
-                        centreX!!.toFloat(), centreY!!.toFloat(), 1)
-
-                words[formedWord] = true
-
-                gridViewModel.setWordsHashMap(words)
-
-                gridHandler.strikeOutWord(context, formedWord, wordsTableLayout)
-
-                if (informationBarViewModel.getScore() == informationBarViewModel.getTotal())
-                {
-                    gridHandler.displayWinDialogue(context)
-                }
+                winHandler()
             }
-
-            gridHandler.removeSearchView(context, startViewNumber!!.minus(1), endViewNumber!!,
-                    gridFrame)
-
-            formedWord = ""
         }
 
-        true
+        return@OnTouchListener true
     }
 
     fun getOnTouchListener(): View.OnTouchListener
     {
         return onTouchListener
+    }
+
+    private fun wordsHandler(words: HashMap<String, Boolean>, formedWord: String)
+    {
+        words[formedWord] = true
+
+        gridViewModel.setWordsHashMap(words)
+
+        gridHandler.strikeOutWord(context, formedWord, wordsTableLayout)
+    }
+
+    private fun scoreHandler()
+    {
+        informationBarViewModel.setScore(false)
+        informationBarHandler.setScoreTextView(informationBarViewModel.getScore(), informationBarViewModel.getTotal(), scoreTextView)
+    }
+
+    private fun winHandler()
+    {
+        if (informationBarViewModel.getScore() == informationBarViewModel.getTotal())
+        {
+            gridHandler.displayWinDialogue(context)
+        }
+    }
+
+    private fun drawLine(startX: Int?, startY: Int?, endX: Int?, endY: Int?, colour: Int)
+    {
+        val drawUtils = DrawUtils(context)
+
+        gridFrame.addView(drawUtils)
+
+        drawUtils.drawLine(startX!!.toFloat(), startY!!.toFloat(), endX!!.toFloat(), endY!!.toFloat(), colour)
+    }
+
+    private fun getWord(newPosition: Int, initialPosition: Int): String?
+    {
+        var directionInterval = 0
+        var indexPosition = initialPosition
+        var returnString = ""
+
+        if (directionPosition != -1)
+        {
+            when (directionPosition)
+            {
+                AppConstants.DIRECTION_STRAIGHT_RIGHT -> directionInterval = 1
+                AppConstants.DIRECTION_DIAGONAL_DOWN_RIGHT -> directionInterval = 11
+                AppConstants.DIRECTION_STRAIGHT_DOWN -> directionInterval = 10
+                AppConstants.DIRECTION_DIAGONAL_DOWN_LEFT -> directionInterval = 9
+                AppConstants.DIRECTION_STRAIGHT_LEFT -> directionInterval = -1
+                AppConstants.DIRECTION_DIAGONAL_UP_LEFT -> directionInterval = -11
+                AppConstants.DIRECTION_STRAIGHT_UP -> directionInterval = -10
+                AppConstants.DIRECTION_DIAGONAL_UP_RIGHT -> directionInterval = -9
+            }
+
+            val untilPosition = newPosition + directionInterval
+
+            while (indexPosition != untilPosition)
+            {
+                returnString += gridViewModel.getLettersHashMap()[indexPosition]
+                indexPosition += directionInterval
+            }
+
+            return returnString
+        }
+        return null
+    }
+
+    private fun directionFinder(newPosition: Int, initialPosition: Int): Int
+    {
+        val directionHint = newPosition - initialPosition
+
+        if (isCellLower(directionHint))
+        {
+            when {
+                isVertical(directionHint) -> return AppConstants.DIRECTION_STRAIGHT_UP
+                isHorizontal(directionHint) -> return AppConstants.DIRECTION_STRAIGHT_LEFT
+                isLeftHighDiagonal(directionHint) -> return AppConstants.DIRECTION_DIAGONAL_UP_LEFT
+                isLeftLowDiagonal(directionHint) -> return AppConstants.DIRECTION_DIAGONAL_UP_RIGHT
+            }
+        }
+        else
+        {
+            when {
+                isVertical(directionHint) -> return AppConstants.DIRECTION_STRAIGHT_DOWN
+                isHorizontal(directionHint) -> return AppConstants.DIRECTION_STRAIGHT_RIGHT
+                isLeftHighDiagonal(directionHint) -> return AppConstants.DIRECTION_DIAGONAL_DOWN_RIGHT
+                isLeftLowDiagonal(directionHint) -> return AppConstants.DIRECTION_DIAGONAL_DOWN_LEFT
+            }
+        }
+        return -1
+    }
+
+    private fun isCellLower(directionHint: Int): Boolean
+    {
+        return directionHint < 0
+    }
+
+    private fun isVertical(directionHint: Int): Boolean
+    {
+        return abs(directionHint) % 10 == 0
+    }
+
+    private fun isLeftHighDiagonal(directionHint: Int): Boolean
+    {
+        return abs(directionHint) % 11 == 0
+    }
+
+    private fun isLeftLowDiagonal(directionHint: Int): Boolean
+    {
+        return abs(directionHint) % 9 == 0
+    }
+
+    private fun isHorizontal(directionHint: Int): Boolean
+    {
+        return abs(directionHint) <= 9
+    }
+
+    private fun findAllDirectionPossibilities(position: Int): ArrayList<Int>
+    {
+        val savedPosition: Int = position
+        var newPosition = position
+        val possiblePositions: ArrayList<Int> = arrayListOf()
+
+        while (newPosition <= ((position / 10) * 10) + 9)
+        {
+            possiblePositions.add(newPosition)
+            newPosition += 1
+        }
+
+        newPosition = savedPosition
+
+        while (newPosition <= 99)
+        {
+            if (!possiblePositions.contains(newPosition))
+            {
+                possiblePositions.add(newPosition)
+            }
+
+            if (newPosition % 10 == 9)
+            {
+                break
+            }
+
+            newPosition += 11
+        }
+
+        newPosition = savedPosition
+
+        while (newPosition <= 99)
+        {
+            if (!possiblePositions.contains(newPosition))
+            {
+                possiblePositions.add(newPosition)
+            }
+            newPosition += 10
+        }
+
+        newPosition = savedPosition
+
+        while (newPosition <= 99)
+        {
+            if (!possiblePositions.contains(newPosition))
+            {
+                possiblePositions.add(newPosition)
+            }
+
+            if (newPosition % 10 == 0)
+            {
+                break
+            }
+
+            newPosition += 9
+        }
+
+        newPosition = savedPosition
+
+        while (newPosition >= ((position / 10) * 10))
+        {
+            if (!possiblePositions.contains(newPosition))
+            {
+                possiblePositions.add(newPosition)
+            }
+            newPosition -= 1
+        }
+
+        newPosition = savedPosition
+
+        while (newPosition >= 0)
+        {
+            if (!possiblePositions.contains(newPosition))
+            {
+                possiblePositions.add(newPosition)
+            }
+
+            if (newPosition % 10 == 0)
+            {
+                break
+            }
+
+            newPosition -= 11
+        }
+
+        newPosition = savedPosition
+
+        while (newPosition >= 0)
+        {
+            if (!possiblePositions.contains(newPosition))
+            {
+                possiblePositions.add(newPosition)
+            }
+            newPosition -= 10
+        }
+
+        newPosition = savedPosition
+
+        while (newPosition >= 0)
+        {
+            if (!possiblePositions.contains(newPosition))
+            {
+                possiblePositions.add(newPosition)
+            }
+
+            if (newPosition % 10 == 9)
+            {
+                break
+            }
+
+            newPosition -= 9
+        }
+
+        return possiblePositions
     }
 }

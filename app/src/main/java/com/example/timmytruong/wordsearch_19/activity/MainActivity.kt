@@ -133,8 +133,8 @@ class MainActivity : Activity()
 
             builder.setTitle(R.string.win_title)
             builder.setMessage(R.string.win_message)
-            builder.setPositiveButton(
-                    R.string.play_again) { _, _ ->
+            builder.setPositiveButton(R.string.play_again)
+            { _, _ ->
                 gridAdapter.reset()
                 reset()
             }
@@ -185,14 +185,11 @@ class MainActivity : Activity()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        gridAdapter = GridAdapter(this, gridHandler, gridView as GridView,
-                gridFrame as FrameLayout, wordTableLayout as TableLayout, score as TextView,
-                gridViewModel, informationBarHandler, informationBarViewModel)
+        gridAdapter = GridAdapter(this, gridHandler, gridView as GridView, gridFrame as FrameLayout, wordTableLayout as TableLayout, score as TextView, gridViewModel, informationBarHandler, informationBarViewModel)
         gridAdapter.setupWordGrid()
         gridAdapter.setupUI()
 
-        informationBarHandler.setScoreTextView(informationBarViewModel.getScore(),
-                informationBarViewModel.getTotal(), score)
+        informationBarHandler.setScoreTextView(informationBarViewModel.getScore(), informationBarViewModel.getTotal(), score)
         informationBarHandler.setResetClickListener(resetBTN)
         informationBarHandler.setPlusClickListener(this, gridViewModel.getWordsHashMap(), plusBTN)
     }
@@ -203,8 +200,7 @@ class MainActivity : Activity()
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == 0 && data != null)
         {
-            val words: HashMap<String, Boolean> = data.getSerializableExtra(
-                    AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY) as HashMap<String, Boolean>
+            val words: HashMap<String, Boolean> = data.getSerializableExtra(AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY) as HashMap<String, Boolean>
             gridAdapter.reset(words)
             reset()
         }

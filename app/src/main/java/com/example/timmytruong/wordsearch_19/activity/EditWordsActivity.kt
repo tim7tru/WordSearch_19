@@ -65,15 +65,12 @@ class EditWordsActivity : Activity()
                     }
                     else if (editTexts[i].text.toString().length > 10)
                     {
-                        Toast.makeText(this,
-                                editTexts[i].text.toString() + " is too long, please keep words under 10 characters.",
-                                Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, editTexts[i].text.toString() + " is too long, please keep words under 10 characters.", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 val intentWithResult = Intent()
-                intentWithResult.putExtra(
-                        AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY, words)
+                intentWithResult.putExtra(AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY, words)
                 setResult(0, intentWithResult)
                 finish()
             }

@@ -6,6 +6,8 @@ object AppConstants
 {
      val DEFAULT_WORDS = arrayOf("OBJECTIVEC", "VARIABLE", "KOTLIN", "MOBILE", "SWIFT", "JAVA")
 
+     val EDGE_CELLS = arrayOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90, 19, 29, 39, 49, 59, 69, 79, 89, 99, 91, 92, 93, 94, 95, 96, 97, 98)
+
      const val INTENT_EXTRA_WORDS_ARRAY_LIST_KEY = "words"
 
      const val UPPERCASE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

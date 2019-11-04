@@ -23,9 +23,7 @@ class GridAdapter(private val context: Context,
                   informationBarHandler: InformationBarHandler,
                   private val informationBarViewModel: InformationBarViewModel)
 {
-    private val drawAdapter: DrawAdapter = DrawAdapter(context, gridFrameLayout,
-            wordTableLayout, scoreTextView, gridHandler, gridViewModel, informationBarViewModel,
-            informationBarHandler)
+    private val drawAdapter: DrawAdapter = DrawAdapter(context, gridFrameLayout, wordTableLayout, scoreTextView, gridHandler, gridViewModel, informationBarViewModel, informationBarHandler)
 
     private fun setupGrid()
     {
@@ -56,28 +54,26 @@ class GridAdapter(private val context: Context,
         gridViewModel.setWordsHashMap(newWords)
     }
 
-    private fun checkIsSizedCorrectly(startIndexOfWord: Int, lengthOfWord: Int,
-                                      directionOfWord: Int): Boolean
+    private fun checkIsSizedCorrectly(startIndexOfWord: Int, lengthOfWord: Int, directionOfWord: Int): Boolean
     {
         if (startIndexOfWord >= 0 && directionOfWord <= 7)
         {
             when (directionOfWord)
             {
-                AppConstants.DIRECTION_STRAIGHT_RIGHT -> return (((((startIndexOfWord / 10) * 10) + 9) - startIndexOfWord) >= lengthOfWord)
-                AppConstants.DIRECTION_DIAGONAL_DOWN_RIGHT -> return (((((startIndexOfWord / 10) * 10) + 9) - startIndexOfWord) >= lengthOfWord && 9 - (startIndexOfWord / 10) >= lengthOfWord)
-                AppConstants.DIRECTION_STRAIGHT_DOWN -> return (9 - (startIndexOfWord / 10) >= lengthOfWord)
-                AppConstants.DIRECTION_DIAGONAL_DOWN_LEFT -> return ((startIndexOfWord - ((startIndexOfWord / 10) * 10) >= lengthOfWord && (startIndexOfWord / 10) + 1 >= lengthOfWord))
-                AppConstants.DIRECTION_STRAIGHT_LEFT -> return ((startIndexOfWord - ((startIndexOfWord / 10) * 10) >= lengthOfWord))
-                AppConstants.DIRECTION_DIAGONAL_UP_LEFT -> return ((startIndexOfWord - ((startIndexOfWord / 10) * 10) >= lengthOfWord && (startIndexOfWord / 10) + 1 >= lengthOfWord))
+                AppConstants.DIRECTION_STRAIGHT_RIGHT -> return (((((startIndexOfWord / 10) * 10) + 10) - startIndexOfWord) >= lengthOfWord)
+                AppConstants.DIRECTION_DIAGONAL_DOWN_RIGHT -> return (((((startIndexOfWord / 10) * 10) + 10) - startIndexOfWord) >= lengthOfWord && 10 - (startIndexOfWord / 10) >= lengthOfWord)
+                AppConstants.DIRECTION_STRAIGHT_DOWN -> return (10 - (startIndexOfWord / 10) >= lengthOfWord)
+                AppConstants.DIRECTION_DIAGONAL_DOWN_LEFT -> return ((startIndexOfWord - (((startIndexOfWord / 10) * 10) - 1) >= lengthOfWord && (startIndexOfWord / 10) + 1 >= lengthOfWord))
+                AppConstants.DIRECTION_STRAIGHT_LEFT -> return ((startIndexOfWord - (((startIndexOfWord / 10) * 10) - 1) >= lengthOfWord))
+                AppConstants.DIRECTION_DIAGONAL_UP_LEFT -> return ((startIndexOfWord - (((startIndexOfWord / 10) * 10) - 1) >= lengthOfWord && (startIndexOfWord / 10) + 1 >= lengthOfWord))
                 AppConstants.DIRECTION_STRAIGHT_UP -> return ((startIndexOfWord / 10) + 1 >= lengthOfWord)
-                AppConstants.DIRECTION_DIAGONAL_UP_RIGHT -> return (((((startIndexOfWord / 10) * 10) + 9) - startIndexOfWord) >= lengthOfWord && (startIndexOfWord / 10) + 1 >= lengthOfWord)
+                AppConstants.DIRECTION_DIAGONAL_UP_RIGHT -> return (((((startIndexOfWord / 10) * 10) + 10) - startIndexOfWord) >= lengthOfWord && (startIndexOfWord / 10) + 1 >= lengthOfWord)
             }
         }
         return false
     }
 
-    private fun checkIsPositionedCorrectly(word: String, startIndexOfWord: Int, lengthOfWord: Int,
-                                           directionOfWord: Int): Boolean
+    private fun checkIsPositionedCorrectly(word: String, startIndexOfWord: Int, lengthOfWord: Int, directionOfWord: Int): Boolean
     {
         var canBePositioned = false
 
@@ -107,23 +103,20 @@ class GridAdapter(private val context: Context,
         return canBePositioned
     }
 
-    private fun letterConflictChecker(word: String, letterIndex: Int,
-                                      letterPositionInWord: Int): Boolean
+    private fun letterConflictChecker(word: String, letterIndex: Int, letterPositionInWord: Int): Boolean
     {
-        if (letterIndex <= AppConstants.NUMBER_OF_CELLS)
+        if (letterIndex < AppConstants.NUMBER_OF_CELLS)
         {
             return when (gridViewModel.getChangeLetterState().values.elementAt(letterIndex))
             {
-                true -> (gridViewModel.getLettersHashMap().values.elementAt(
-                        letterIndex) == word.toCharArray()[letterPositionInWord])
+                true -> (gridViewModel.getLettersHashMap().values.elementAt(letterIndex) == word.toCharArray()[letterPositionInWord])
                 false -> true
             }
         }
         return false
     }
 
-    private fun changeLetterArray(startIndexOfWord: Int, lengthOfWord: Int, directionOfWord: Int,
-                                  word: String)
+    private fun changeLetterArray(startIndexOfWord: Int, lengthOfWord: Int, directionOfWord: Int, word: String)
     {
         var letterIndex: Int = startIndexOfWord
 
@@ -146,17 +139,30 @@ class GridAdapter(private val context: Context,
         }
     }
 
+    private fun determineStartIndex(lengthOfWord: Int): Int
+    {
+        val randomElement = Random.nextInt(AppConstants.EDGE_CELLS.size)
+
+        return if (lengthOfWord == 10)
+        {
+            AppConstants.EDGE_CELLS[randomElement]
+        }
+        else
+        {
+            Random.nextInt(AppConstants.NUMBER_OF_CELLS)
+        }
+    }
+
+
     fun setupWordGrid()
     {
         for (word in gridViewModel.getWordsHashMap().keys)
         {
             val lengthOfWord: Int = word.length
 
-            var directionOfWord: Int = Random.nextInt(
-                    AppConstants.NUMBER_OF_DIRECTIONS)
+            var directionOfWord: Int = Random.nextInt(AppConstants.NUMBER_OF_DIRECTIONS)
 
-            var startIndexOfWord: Int = Random.nextInt(
-                    AppConstants.NUMBER_OF_CELLS)
+            var startIndexOfWord: Int = determineStartIndex(lengthOfWord)
 
             var isPositionedCorrectly: Boolean
 
@@ -166,18 +172,14 @@ class GridAdapter(private val context: Context,
 
             while (!isSizedCorrectly)
             {
-                isSizedCorrectly = checkIsSizedCorrectly(startIndexOfWord, lengthOfWord,
-                        directionOfWord)
+                isSizedCorrectly = checkIsSizedCorrectly(startIndexOfWord, lengthOfWord, directionOfWord)
 
                 if (isSizedCorrectly)
                 {
-
-                    isPositionedCorrectly = checkIsPositionedCorrectly(word, startIndexOfWord,
-                            lengthOfWord, directionOfWord)
+                    isPositionedCorrectly = checkIsPositionedCorrectly(word, startIndexOfWord, lengthOfWord, directionOfWord)
 
                     if (isPositionedCorrectly)
                     {
-                        // Do Nothing
                         break
                     }
                     else
@@ -198,7 +200,7 @@ class GridAdapter(private val context: Context,
                 }
                 else if (count == 8)
                 {
-                    startIndexOfWord = Random.nextInt(AppConstants.NUMBER_OF_CELLS)
+                    startIndexOfWord = determineStartIndex(lengthOfWord)
                     directionOfWord = Random.nextInt(AppConstants.NUMBER_OF_DIRECTIONS)
                     count = 0
                 }
@@ -207,6 +209,7 @@ class GridAdapter(private val context: Context,
             changeLetterArray(startIndexOfWord, lengthOfWord, directionOfWord, word)
         }
     }
+
 
     fun setupUI()
     {

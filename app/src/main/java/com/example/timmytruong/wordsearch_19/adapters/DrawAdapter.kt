@@ -129,10 +129,6 @@ class DrawAdapter(private val context: Context,
                     }
                 }
                 MotionEvent.ACTION_UP -> {
-                    Log.i("Start View Number", startViewNumber.toString() + "")
-                    Log.i("Current View Number", gridFrame.childCount.toString() + "")
-                    Log.i("Start Cell Number", initialPosition.toString() + "")
-                    Log.i("End Cell Number", currentPosition.toString() + "")
                     if (startViewNumber != -1)
                     {
                         val formedWord = getWord(currentPosition, initialPosition)
@@ -155,7 +151,7 @@ class DrawAdapter(private val context: Context,
                 }
             }
         }
-        else if (position == -1 && action == MotionEvent.ACTION_UP && startViewNumber != -1)
+        else if (position == -1 && action == MotionEvent.ACTION_UP)
         {
             val formedWord = getWord(currentPosition, initialPosition)
 
@@ -223,7 +219,7 @@ class DrawAdapter(private val context: Context,
 
         if (directionPosition != -1)
         {
-            when (directionInterval)
+            when (directionPosition)
             {
                 AppConstants.DIRECTION_STRAIGHT_RIGHT -> directionInterval = 1
                 AppConstants.DIRECTION_DIAGONAL_DOWN_RIGHT -> directionInterval = 11

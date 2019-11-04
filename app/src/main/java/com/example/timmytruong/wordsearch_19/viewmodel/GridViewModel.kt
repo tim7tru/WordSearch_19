@@ -17,7 +17,7 @@ class GridViewModel
         this.lettersHashMap = randomizeLetters()
     }
 
-    fun setDefaultWordsHashMap(): HashMap<String, Boolean>
+    private fun setDefaultWordsHashMap(): HashMap<String, Boolean>
     {
         val returnWords: HashMap<String, Boolean> = linkedMapOf()
 
@@ -31,7 +31,7 @@ class GridViewModel
         return returnWords
     }
 
-    fun randomizeLetters(): LinkedHashMap<Int, Char>
+    private fun randomizeLetters(): LinkedHashMap<Int, Char>
     {
         val randomLetters: LinkedHashMap<Int, Char> = linkedMapOf()
 
@@ -46,7 +46,7 @@ class GridViewModel
         return randomLetters
     }
 
-    fun defaultStates(): LinkedHashMap<Int, Boolean>
+    private fun defaultStates(): LinkedHashMap<Int, Boolean>
     {
         val defaultStates: LinkedHashMap<Int, Boolean> = linkedMapOf()
 

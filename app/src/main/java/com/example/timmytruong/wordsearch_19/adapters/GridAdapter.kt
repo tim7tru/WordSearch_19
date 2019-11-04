@@ -198,10 +198,8 @@ class GridAdapter(private val context: Context,
                 }
                 else if (count == 8)
                 {
-                    startIndexOfWord = Random.nextInt(
-                            AppConstants.NUMBER_OF_CELLS)
-                    directionOfWord = Random.nextInt(
-                            AppConstants.NUMBER_OF_DIRECTIONS)
+                    startIndexOfWord = Random.nextInt(AppConstants.NUMBER_OF_CELLS)
+                    directionOfWord = Random.nextInt(AppConstants.NUMBER_OF_DIRECTIONS)
                     count = 0
                 }
             }

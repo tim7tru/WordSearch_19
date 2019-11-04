@@ -2,7 +2,6 @@ package com.example.timmytruong.wordsearch_19.adapters
 
 import android.content.Context
 import android.graphics.Rect
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
@@ -16,7 +15,6 @@ import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
 import com.example.timmytruong.wordsearch_19.viewmodel.GridViewModel
 import com.example.timmytruong.wordsearch_19.viewmodel.InformationBarViewModel
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 class DrawAdapter(private val context: Context,

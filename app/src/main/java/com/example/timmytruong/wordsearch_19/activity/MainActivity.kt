@@ -2,7 +2,6 @@ package com.example.timmytruong.wordsearch_19.activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Paint
@@ -129,17 +128,13 @@ class MainActivity : Activity()
 
         override fun displayWinDialogue(context: Context)
         {
-            val builder = AlertDialog.Builder(context)
-
-            builder.setTitle(R.string.win_title)
-            builder.setMessage(R.string.win_message)
+            val builder = gridViewModel.createAlertDialog(context)
             builder.setPositiveButton(R.string.play_again)
             { _, _ ->
                 gridAdapter.reset()
                 reset()
             }
             builder.setNegativeButton(R.string.cancel) { _, _ -> }
-            builder.setIcon(android.R.drawable.ic_dialog_info)
             builder.show()
         }
 

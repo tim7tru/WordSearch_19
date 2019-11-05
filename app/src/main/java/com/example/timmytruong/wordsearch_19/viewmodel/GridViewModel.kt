@@ -1,5 +1,8 @@
 package com.example.timmytruong.wordsearch_19.viewmodel
 
+import android.app.AlertDialog
+import android.content.Context
+import com.example.timmytruong.wordsearch_19.R
 import com.example.timmytruong.wordsearch_19.models.GridModel
 import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
 
@@ -124,5 +127,13 @@ class GridViewModel
     fun getLettersHashMap(): LinkedHashMap<Int, Char>
     {
         return gridModel.getLettersHashMap()
+    }
+
+    fun createAlertDialog(context: Context): AlertDialog.Builder
+    {
+        return AlertDialog.Builder(context)
+                .setTitle(R.string.win_title)
+                .setMessage(R.string.win_message)
+                .setIcon(android.R.drawable.ic_dialog_alert)
     }
 }

@@ -1,5 +1,5 @@
 # WordSearch_19
-A word search application that was done for Shopify's F2019 Android Dev. Internship.
+A word search application that was done for Shopify's Android Dev. Internship.
 
 May 2019
 - Complete application in Java with a broken MVC design pattern.

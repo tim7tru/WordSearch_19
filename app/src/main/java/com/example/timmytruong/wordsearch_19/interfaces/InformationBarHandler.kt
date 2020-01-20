@@ -1,9 +1,9 @@
 package com.example.timmytruong.wordsearch_19.interfaces
 
 import android.content.Context
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import com.example.timmytruong.wordsearch_19.model.Word
 
 interface InformationBarHandler
 {
@@ -11,5 +11,5 @@ interface InformationBarHandler
 
     fun setScoreTextView(score: Int, total: Int, scoreView: TextView)
 
-    fun setPlusClickListener(context: Context, words: HashMap<String, Boolean>, plusBTN: Button)
+    fun setPlusClickListener(context: Context, words: ArrayList<Word>, plusBTN: Button)
 }

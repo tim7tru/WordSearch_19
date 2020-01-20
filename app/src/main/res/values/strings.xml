@@ -19,4 +19,7 @@
     <string name="win_title">WINNER!</string>
     <string name="win_message">Congratulations! You completed the search! Would you like to play again?</string>
     <string name="play_again">PLAY AGAIN</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

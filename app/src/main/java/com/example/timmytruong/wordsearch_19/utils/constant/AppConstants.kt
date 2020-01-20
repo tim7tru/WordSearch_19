@@ -39,4 +39,6 @@ object AppConstants
      const val PAINT_COLOUR_YELLOW = Color.YELLOW
 
      const val PAINT_COLOUR_GREEN = Color.GREEN
+
+     const val FRAGMENT_EDIT_WORDS = "edit_words"
 }

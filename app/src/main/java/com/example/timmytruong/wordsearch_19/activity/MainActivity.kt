@@ -1,32 +1,46 @@
 package com.example.timmytruong.wordsearch_19.activity
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import com.example.timmytruong.wordsearch_19.R
 import com.example.timmytruong.wordsearch_19.adapters.GridAdapter
+import com.example.timmytruong.wordsearch_19.dagger.component.DaggerAppComponent
+import com.example.timmytruong.wordsearch_19.fragment.SettingsFragment
 import com.example.timmytruong.wordsearch_19.interfaces.GridHandler
 import com.example.timmytruong.wordsearch_19.interfaces.InformationBarHandler
+import com.example.timmytruong.wordsearch_19.interfaces.SaveHandler
+import com.example.timmytruong.wordsearch_19.model.Letter
+import com.example.timmytruong.wordsearch_19.model.Word
 import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
 import com.example.timmytruong.wordsearch_19.utils.ui.LetterAdapter
 import com.example.timmytruong.wordsearch_19.viewmodel.GridViewModel
 import com.example.timmytruong.wordsearch_19.viewmodel.InformationBarViewModel
+import com.example.timmytruong.wordsearch_19.viewmodel.factory.GridViewModelFactory
+import com.example.timmytruong.wordsearch_19.viewmodel.factory.InformationBarViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
-class MainActivity : Activity()
+class MainActivity : AppCompatActivity()
 {
-    private val gridViewModel: GridViewModel = GridViewModel()
+    @Inject lateinit var gridViewModelFactory: GridViewModelFactory
 
-    private val informationBarViewModel: InformationBarViewModel = InformationBarViewModel()
+    @Inject lateinit var informationBarViewModelFactory: InformationBarViewModelFactory
+
+    private lateinit var gridViewModel: GridViewModel
+
+    private lateinit var informationBarViewModel: InformationBarViewModel
 
     private lateinit var gridAdapter: GridAdapter
+
+    private lateinit var settingsFragment: SettingsFragment
 
     private val gridHandler = object : GridHandler
     {
@@ -56,18 +70,23 @@ class MainActivity : Activity()
         }
 
         @SuppressLint("ClickableViewAccessibility")
-        override fun setOnTouchListener(context: Context, onTouchListener: View.OnTouchListener,
+        override fun setOnTouchListener(context: Context,
+                                        onTouchListener: View.OnTouchListener,
                                         gridView: GridView)
         {
             gridView.setOnTouchListener(onTouchListener)
         }
 
-        override fun setLetters(context: Context, letterAdapter: LetterAdapter, gridView: GridView)
+        override fun setLetters(context: Context,
+                                letterAdapter: LetterAdapter,
+                                gridView: GridView)
         {
             gridView.adapter = letterAdapter
         }
 
-        override fun setTableLayout(context: Context, keySet: Set<String>, tableLayout: TableLayout)
+        override fun setTableLayout(context: Context,
+                                    keySet: ArrayList<Word>,
+                                    tableLayout: TableLayout)
         {
 
             tableLayout.removeAllViews()
@@ -95,7 +114,7 @@ class MainActivity : Activity()
                 wordText.layoutParams = textParams
 
                 wordText.textSize = 16.toFloat()
-                wordText.text = word
+                wordText.text = word.word
                 wordText.setPadding(0, 10, 0, 10)
                 wordText.gravity = Gravity.CENTER
 
@@ -115,12 +134,15 @@ class MainActivity : Activity()
             }
         }
 
-        override fun clearTableLayout(context: Context, tableLayout: TableLayout)
+        override fun clearTableLayout(context: Context,
+                                      tableLayout: TableLayout)
         {
             tableLayout.removeAllViews()
         }
 
-        override fun removeSearchView(context: Context, startViewCount: Int, endViewCount: Int,
+        override fun removeSearchView(context: Context,
+                                      startViewCount: Int,
+                                      endViewCount: Int,
                                       gridFrame: FrameLayout)
         {
             gridFrame.removeViews(startViewCount, endViewCount - startViewCount)
@@ -128,7 +150,11 @@ class MainActivity : Activity()
 
         override fun displayWinDialogue(context: Context)
         {
-            val builder = gridViewModel.createAlertDialog(context)
+            val builder = AlertDialog.Builder(context)
+                    .setTitle(R.string.win_title)
+                    .setMessage(R.string.win_message)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+
             builder.setPositiveButton(R.string.play_again)
             { _, _ ->
                 gridAdapter.reset()
@@ -139,9 +165,10 @@ class MainActivity : Activity()
         }
 
         override fun getLetterAdapter(context: Context,
-                                      letters: LinkedHashMap<Int, Char>): LetterAdapter
+                                      letters: ArrayList<Letter>): LetterAdapter
         {
-            return LetterAdapter(context, letters)
+            return LetterAdapter(context = context,
+                    letters = letters)
         }
     }
 
@@ -151,6 +178,7 @@ class MainActivity : Activity()
         {
             val resetClickListener = View.OnClickListener {
                 gridAdapter.reset()
+
                 reset()
             }
             resetBTN.setOnClickListener(resetClickListener)
@@ -163,48 +191,98 @@ class MainActivity : Activity()
             scoreView.text = text
         }
 
-        override fun setPlusClickListener(context: Context, words: HashMap<String, Boolean>,
+        override fun setPlusClickListener(context: Context, words: ArrayList<Word>,
                                           plusBTN: Button)
         {
-            val plusClickListener: View.OnClickListener = View.OnClickListener {
-                val intent = Intent(context, EditWordsActivity::class.java)
-                intent.putExtra(AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY, words)
-                startActivityForResult(intent, 0)
+            val plusClickListener = View.OnClickListener {
+
+                val bundle = Bundle()
+
+                bundle.putSerializable(AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY, gridViewModel.getWords())
+
+                settingsFragment.arguments = bundle
+
+                this@MainActivity.supportFragmentManager.beginTransaction()
+                        .show(settingsFragment)
+                        .commit()
             }
             plusBTN.setOnClickListener(plusClickListener)
         }
     }
 
+    private val saveHandler: SaveHandler = object: SaveHandler
+    {
+        override fun onSaveClicked()
+        {
+            gridAdapter.reset()
+
+            reset()
+        }
+
+    }
+
+    @Suppress("PLUGIN_WARNING")
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
 
-        gridAdapter = GridAdapter(this, gridHandler, gridView as GridView, gridFrame as FrameLayout, wordTableLayout as TableLayout, score as TextView, gridViewModel, informationBarHandler, informationBarViewModel)
+        DaggerAppComponent.create().inject(this)
+
+        gridViewModel = gridViewModelFactory.create(GridViewModel::class.java)
+
+        informationBarViewModel = informationBarViewModelFactory.create(InformationBarViewModel::class.java)
+
+        settingsFragment = SettingsFragment(saveHandler = saveHandler)
+
+        val bundle = Bundle()
+
+        bundle.putSerializable(AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY, gridViewModel.getWords())
+
+        settingsFragment.arguments = bundle
+
+        this@MainActivity.supportFragmentManager.beginTransaction()
+                .add(main_screen.id, settingsFragment, AppConstants.FRAGMENT_EDIT_WORDS)
+                .hide(settingsFragment)
+                .commit()
+
+        gridAdapter = GridAdapter(context = this,
+                gridHandler = gridHandler,
+                gridView = gridView as GridView,
+                gridFrameLayout = gridFrame as FrameLayout,
+                wordTableLayout = wordTableLayout as TableLayout,
+                scoreTextView = score as TextView,
+                gridViewModel = gridViewModel,
+                informationBarHandler = informationBarHandler,
+                informationBarViewModel = informationBarViewModel)
+
         gridAdapter.setupWordGrid()
+
         gridAdapter.setupUI()
 
-        informationBarHandler.setScoreTextView(informationBarViewModel.getScore(), informationBarViewModel.getTotal(), score)
-        informationBarHandler.setResetClickListener(resetBTN)
-        informationBarHandler.setPlusClickListener(this, gridViewModel.getWordsHashMap(), plusBTN)
-    }
+        informationBarHandler.setScoreTextView(score = informationBarViewModel.getScore(),
+                total = informationBarViewModel.getTotal(),
+                scoreView = score)
 
-    @Suppress("UNCHECKED_CAST")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
-    {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == 0 && data != null)
-        {
-            val words: HashMap<String, Boolean> = data.getSerializableExtra(AppConstants.INTENT_EXTRA_WORDS_ARRAY_LIST_KEY) as HashMap<String, Boolean>
-            gridAdapter.reset(words)
-            reset()
-        }
+        informationBarHandler.setResetClickListener(resetBTN = resetBTN)
+
+        informationBarHandler.setPlusClickListener(context = this,
+                words = gridViewModel.getWords(),
+                plusBTN = plusBTN)
     }
 
     private fun reset()
     {
-        informationBarViewModel.setScore(true)
-        informationBarHandler.setScoreTextView(informationBarViewModel.getScore(), informationBarViewModel.getTotal(), score)
-        gridHandler.removeSearchView(this, 1, gridFrame.childCount, gridFrame)
+        informationBarViewModel.setScore(resetScore = true)
+
+        informationBarHandler.setScoreTextView(score = informationBarViewModel.getScore(),
+                total = informationBarViewModel.getTotal(),
+                scoreView = score)
+
+        gridHandler.removeSearchView(context = this,
+                startViewCount = 1,
+                endViewCount = gridFrame.childCount,
+                gridFrame = gridFrame)
     }
 }

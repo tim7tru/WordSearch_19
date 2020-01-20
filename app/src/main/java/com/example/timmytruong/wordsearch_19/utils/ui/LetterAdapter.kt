@@ -8,13 +8,14 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.example.timmytruong.wordsearch_19.R
+import com.example.timmytruong.wordsearch_19.model.Letter
 
-class LetterAdapter(val context: Context, private val letters: LinkedHashMap<Int, Char>) :
+class LetterAdapter(val context: Context, private val letters: ArrayList<Letter>) :
         BaseAdapter()
 {
     override fun getCount(): Int
     {
-        return letters.keys.size
+        return letters.size
     }
 
     override fun getItem(position: Int): Any
@@ -39,7 +40,7 @@ class LetterAdapter(val context: Context, private val letters: LinkedHashMap<Int
 
         val letter: TextView = newConvertView!!.findViewById(R.id.letter)
         letter.tag = position
-        letter.text = letters[position].toString()
+        letter.text = letters[position].letter.toString()
 
         return newConvertView
     }

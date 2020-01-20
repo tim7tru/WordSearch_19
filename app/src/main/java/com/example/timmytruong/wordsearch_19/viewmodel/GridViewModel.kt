@@ -1,139 +1,57 @@
 package com.example.timmytruong.wordsearch_19.viewmodel
 
-import android.app.AlertDialog
-import android.content.Context
-import com.example.timmytruong.wordsearch_19.R
-import com.example.timmytruong.wordsearch_19.models.GridModel
-import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
+import androidx.lifecycle.ViewModel
+import com.example.timmytruong.wordsearch_19.model.Letter
+import com.example.timmytruong.wordsearch_19.model.Word
+import com.example.timmytruong.wordsearch_19.provider.GridProvider
+import javax.inject.Inject
 
-class GridViewModel
+class GridViewModel(private val gridProvider: GridProvider): ViewModel()
 {
-    private var gridModel: GridModel = GridModel()
-    private var wordsHashMap: HashMap<String, Boolean>
-    private var changedLetterStateHashMap: LinkedHashMap<Int, Boolean>
-    private var lettersHashMap: LinkedHashMap<Int, Char>
-
-    init
+    private fun randomizeLetters(): ArrayList<Letter>
     {
-        this.wordsHashMap = setDefaultWordsHashMap()
-        this.changedLetterStateHashMap = defaultStates()
-        this.lettersHashMap = randomizeLetters()
+        return gridProvider.randomizeLetters()
     }
 
-    private fun setDefaultWordsHashMap(): HashMap<String, Boolean>
+    fun setWords(words: ArrayList<Word>)
     {
-        val returnWords: HashMap<String, Boolean> = linkedMapOf()
-
-        for (word in AppConstants.DEFAULT_WORDS)
-        {
-            returnWords.put(word, false)
-        }
-
-        gridModel.setWordsHashMap(returnWords)
-
-        return returnWords
+        gridProvider.setWords(wordsArray = words)
     }
 
-    private fun randomizeLetters(): LinkedHashMap<Int, Char>
+    fun getWords(): ArrayList<Word>
     {
-        val randomLetters: LinkedHashMap<Int, Char> = linkedMapOf()
-
-        for (i in 0 until 100)
-        {
-            val randomElement: Int = (Math.random() * 26).toInt()
-            randomLetters.put(i, AppConstants.UPPERCASE_LETTERS[randomElement])
-        }
-
-        gridModel.setLettersHashMap(randomLetters)
-
-        return randomLetters
+        return gridProvider.getWords()
     }
 
-    private fun defaultStates(): LinkedHashMap<Int, Boolean>
-    {
-        val defaultStates: LinkedHashMap<Int, Boolean> = linkedMapOf()
-
-        for (i in 0 until 100)
-        {
-            defaultStates.put(i, false)
-        }
-
-        gridModel.setStatesHashMap(defaultStates)
-
-        return defaultStates
-    }
-
-    private fun saveData()
-    {
-        gridModel.setLettersHashMap(lettersHashMap)
-        gridModel.setStatesHashMap(changedLetterStateHashMap)
-        gridModel.setWordsHashMap(wordsHashMap)
-    }
-
-    fun setWordsHashMap(wordsHM: HashMap<String, Boolean>)
-    {
-        wordsHashMap = wordsHM
-        saveData()
-    }
-
-    fun getWordsHashMap(): HashMap<String, Boolean>
-    {
-        return gridModel.getWordsHashMap()
-    }
-
-    fun setLetters()
-    {
-        setLetters(null, null)
-        setChangeLetterState(null)
-    }
-
-    fun setLetters(letterIndex: Int?, letter: Char?)
+    fun setLetters(letterIndex: Int? = null, letter: Char? = null)
     {
         if (letter == null && letterIndex == null)
         {
-            lettersHashMap = randomizeLetters()
+            gridProvider.setLetters(lettersArray = randomizeLetters())
         }
         else if (letter != null && letterIndex != null)
         {
-            lettersHashMap.put(letterIndex, letter)
+            gridProvider.setLetter(letterIndex = letterIndex, letter = letter)
         }
-
-        saveData()
     }
 
-    fun setChangeLetterState(letterIndex: Int?)
+    fun setChangeLetterState(letterIndex: Int? = null)
     {
-        if (letterIndex != null)
-        {
-            changedLetterStateHashMap.put(letterIndex, true)
-        }
-        else
-        {
-            changedLetterStateHashMap.clear()
-            for (i in 0 until 100)
-            {
-                changedLetterStateHashMap.put(i, false)
-            }
-        }
-
-        saveData()
+        gridProvider.setLetterState(letterIndex = letterIndex)
     }
 
-    fun getChangeLetterState(): LinkedHashMap<Int, Boolean>
+    fun getLetters(): ArrayList<Letter>
     {
-        return gridModel.getLetterStateHashMap()
+        return gridProvider.getLetters()
     }
 
-    fun getLettersHashMap(): LinkedHashMap<Int, Char>
+    fun getWordPositionByWord(word: String): Int
     {
-        return gridModel.getLettersHashMap()
+        return gridProvider.getWordPostiionByWord(wordToBeFound = word)
     }
 
-    fun createAlertDialog(context: Context): AlertDialog.Builder
+    fun containsWord(word: String): Boolean
     {
-        return AlertDialog.Builder(context)
-                .setTitle(R.string.win_title)
-                .setMessage(R.string.win_message)
-                .setIcon(android.R.drawable.ic_dialog_alert)
+        return gridProvider.containsWord(word)
     }
 }

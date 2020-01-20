@@ -7,6 +7,7 @@ import android.widget.TableLayout
 import android.widget.TextView
 import com.example.timmytruong.wordsearch_19.interfaces.GridHandler
 import com.example.timmytruong.wordsearch_19.interfaces.InformationBarHandler
+import com.example.timmytruong.wordsearch_19.model.Word
 import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
 import com.example.timmytruong.wordsearch_19.utils.ui.LetterAdapter
 import com.example.timmytruong.wordsearch_19.viewmodel.GridViewModel
@@ -19,7 +20,7 @@ class GridAdapter(private val context: Context,
                   gridFrameLayout: FrameLayout,
                   private val wordTableLayout: TableLayout,
                   scoreTextView: TextView,
-                  private val gridViewModel: GridViewModel,
+                  private var gridViewModel: GridViewModel,
                   informationBarHandler: InformationBarHandler,
                   private val informationBarViewModel: InformationBarViewModel)
 {
@@ -30,7 +31,7 @@ class GridAdapter(private val context: Context,
         gridViewModel.setLetters()
     }
 
-    fun reset(newWords: HashMap<String, Boolean>)
+    fun reset(newWords: ArrayList<Word>)
     {
         setupGrid()
         setupWords(newWords)
@@ -40,18 +41,18 @@ class GridAdapter(private val context: Context,
 
     fun reset()
     {
-        val resetHashMap: HashMap<String, Boolean> = gridViewModel.getWordsHashMap()
+        val resetWords: ArrayList<Word> = gridViewModel.getWords()
 
-        for (word in 0 until resetHashMap.size)
+        for (word in 0 until resetWords.size)
         {
-            resetHashMap[gridViewModel.getWordsHashMap().keys.elementAt(word)] = false
+            resetWords[word].beenFound = false
         }
-        reset(resetHashMap)
+        reset(resetWords)
     }
 
-    private fun setupWords(newWords: HashMap<String, Boolean>)
+    private fun setupWords(newWords: ArrayList<Word>)
     {
-        gridViewModel.setWordsHashMap(newWords)
+        gridViewModel.setWords(newWords)
     }
 
     private fun checkIsSizedCorrectly(startIndexOfWord: Int, lengthOfWord: Int, directionOfWord: Int): Boolean
@@ -107,9 +108,9 @@ class GridAdapter(private val context: Context,
     {
         if (letterIndex < AppConstants.NUMBER_OF_CELLS)
         {
-            return when (gridViewModel.getChangeLetterState().values.elementAt(letterIndex))
+            return when (gridViewModel.getLetters()[letterIndex].hasChanged)
             {
-                true -> (gridViewModel.getLettersHashMap().values.elementAt(letterIndex) == word.toCharArray()[letterPositionInWord])
+                true -> (gridViewModel.getLetters()[letterIndex].letter == word.toCharArray()[letterPositionInWord])
                 false -> true
             }
         }
@@ -156,9 +157,9 @@ class GridAdapter(private val context: Context,
 
     fun setupWordGrid()
     {
-        for (word in gridViewModel.getWordsHashMap().keys)
+        for (word in gridViewModel.getWords())
         {
-            val lengthOfWord: Int = word.length
+            val lengthOfWord: Int = word.word.length
 
             var directionOfWord: Int = Random.nextInt(AppConstants.NUMBER_OF_DIRECTIONS)
 
@@ -176,7 +177,7 @@ class GridAdapter(private val context: Context,
 
                 if (isSizedCorrectly)
                 {
-                    isPositionedCorrectly = checkIsPositionedCorrectly(word, startIndexOfWord, lengthOfWord, directionOfWord)
+                    isPositionedCorrectly = checkIsPositionedCorrectly(word.word, startIndexOfWord, lengthOfWord, directionOfWord)
 
                     if (isPositionedCorrectly)
                     {
@@ -206,17 +207,17 @@ class GridAdapter(private val context: Context,
                 }
             }
 
-            changeLetterArray(startIndexOfWord, lengthOfWord, directionOfWord, word)
+            changeLetterArray(startIndexOfWord, lengthOfWord, directionOfWord, word.word)
         }
     }
 
 
     fun setupUI()
     {
-        val letterAdapter = LetterAdapter(context, gridViewModel.getLettersHashMap())
+        val letterAdapter = LetterAdapter(context, gridViewModel.getLetters())
         gridHandler.setLetters(context, letterAdapter, gridView)
-        gridHandler.setTableLayout(context, gridViewModel.getWordsHashMap().keys, wordTableLayout)
+        gridHandler.setTableLayout(context, gridViewModel.getWords(), wordTableLayout)
         gridHandler.setOnTouchListener(context, drawAdapter.getOnTouchListener(), gridView)
-        informationBarViewModel.setTotalWords(gridViewModel.getWordsHashMap().size)
+        informationBarViewModel.setTotalWords(gridViewModel.getWords().size)
     }
 }

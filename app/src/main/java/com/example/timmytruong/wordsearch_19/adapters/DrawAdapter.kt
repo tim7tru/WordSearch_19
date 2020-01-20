@@ -10,11 +10,13 @@ import android.widget.TableLayout
 import android.widget.TextView
 import com.example.timmytruong.wordsearch_19.interfaces.GridHandler
 import com.example.timmytruong.wordsearch_19.interfaces.InformationBarHandler
+import com.example.timmytruong.wordsearch_19.model.Word
 import com.example.timmytruong.wordsearch_19.utils.DrawUtils
 import com.example.timmytruong.wordsearch_19.utils.constant.AppConstants
 import com.example.timmytruong.wordsearch_19.viewmodel.GridViewModel
 import com.example.timmytruong.wordsearch_19.viewmodel.InformationBarViewModel
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 class DrawAdapter(private val context: Context,
@@ -26,7 +28,6 @@ class DrawAdapter(private val context: Context,
                   private val informationBarViewModel: InformationBarViewModel,
                   private val informationBarHandler: InformationBarHandler)
 {
-
     private var initialPosition: Int = -1
 
     private var currentPosition: Int = -1
@@ -48,8 +49,6 @@ class DrawAdapter(private val context: Context,
     private var startViewNumber: Int = -1
 
     private val onTouchListener = View.OnTouchListener { v: View, event: MotionEvent ->
-
-        val words: HashMap<String, Boolean> = gridViewModel.getWordsHashMap()
 
         val action: Int = event.actionMasked
 
@@ -135,13 +134,13 @@ class DrawAdapter(private val context: Context,
 
                         gridHandler.removeSearchView(context, startViewNumber, endViewNumber, gridFrame)
 
-                        if (formedWord != null && words.contains(formedWord) && !(words[formedWord] as Boolean))
+                        if (formedWord != null && gridViewModel.containsWord(word = formedWord) && !(gridViewModel.getWords()[gridViewModel.getWordPositionByWord(formedWord)].beenFound))
                         {
                             scoreHandler()
 
                             drawLine(startCentreX, startCentreY, centreX, centreY, AppConstants.PAINT_COLOUR_GREEN)
 
-                            wordsHandler(words, formedWord)
+                            wordsHandler(gridViewModel.getWords(), formedWord)
 
                             winHandler()
                         }
@@ -157,13 +156,13 @@ class DrawAdapter(private val context: Context,
 
             gridHandler.removeSearchView(context, startViewNumber, endViewNumber, gridFrame)
 
-            if (formedWord != null && words.contains(formedWord) && !(words[formedWord] as Boolean))
+            if (formedWord != null && gridViewModel.containsWord(formedWord) && !(gridViewModel.getWords()[gridViewModel.getWordPositionByWord(formedWord)].beenFound))
             {
                 scoreHandler()
 
                 drawLine(startCentreX, startCentreY, centreX, centreY, AppConstants.PAINT_COLOUR_GREEN)
 
-                wordsHandler(words, formedWord)
+                wordsHandler(gridViewModel.getWords(), formedWord)
 
                 winHandler()
             }
@@ -177,11 +176,11 @@ class DrawAdapter(private val context: Context,
         return onTouchListener
     }
 
-    private fun wordsHandler(words: HashMap<String, Boolean>, formedWord: String)
+    private fun wordsHandler(words: ArrayList<Word>, formedWord: String)
     {
-        words[formedWord] = true
+        words[gridViewModel.getWordPositionByWord(formedWord)].beenFound = true
 
-        gridViewModel.setWordsHashMap(words)
+        gridViewModel.setWords(words)
 
         gridHandler.strikeOutWord(context, formedWord, wordsTableLayout)
     }
@@ -233,7 +232,7 @@ class DrawAdapter(private val context: Context,
 
             while (indexPosition != untilPosition)
             {
-                returnString += gridViewModel.getLettersHashMap()[indexPosition]
+                returnString += gridViewModel.getLetters()[indexPosition].letter
                 indexPosition += directionInterval
             }
 

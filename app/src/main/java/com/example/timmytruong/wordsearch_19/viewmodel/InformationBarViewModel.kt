@@ -1,48 +1,28 @@
 package com.example.timmytruong.wordsearch_19.viewmodel
 
-import com.example.timmytruong.wordsearch_19.models.InformationBarModel
+import androidx.lifecycle.ViewModel
+import com.example.timmytruong.wordsearch_19.provider.InformationBarProvider
+import javax.inject.Inject
 
-class InformationBarViewModel
+class InformationBarViewModel(private val informationBarProvider: InformationBarProvider): ViewModel()
 {
-
-    private val informationBarModel: InformationBarModel = InformationBarModel()
-
-    private var score: Int
-
-    init
-    {
-        this.score = 0
-    }
-
     fun setScore(resetScore: Boolean)
     {
-        when (resetScore)
-        {
-            true ->
-            {
-                score = 0
-            }
-            false ->
-            {
-                score++
-            }
-        }
-
-        informationBarModel.setScore(score)
+        informationBarProvider.setScore(resetScore = resetScore)
     }
 
     fun setTotalWords(totalWords: Int)
     {
-        informationBarModel.setTotalWords(totalWords)
+        informationBarProvider.setTotalWords(totalCount = totalWords)
     }
 
     fun getScore(): Int
     {
-        return informationBarModel.getScore()
+        return informationBarProvider.getScore()
     }
 
     fun getTotal(): Int
     {
-        return informationBarModel.getTotalWords()
+        return informationBarProvider.getTotalWords()
     }
 }

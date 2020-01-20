@@ -5,6 +5,8 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.GridView
 import android.widget.TableLayout
+import com.example.timmytruong.wordsearch_19.model.Letter
+import com.example.timmytruong.wordsearch_19.model.Word
 import com.example.timmytruong.wordsearch_19.utils.ui.LetterAdapter
 
 interface GridHandler
@@ -16,7 +18,7 @@ interface GridHandler
 
     fun setLetters(context: Context, letterAdapter: LetterAdapter, gridView: GridView)
 
-    fun setTableLayout(context: Context, keySet: Set<String>, tableLayout: TableLayout)
+    fun setTableLayout(context: Context, keySet: ArrayList<Word>, tableLayout: TableLayout)
 
     fun clearTableLayout(context: Context, tableLayout: TableLayout)
 
@@ -25,5 +27,5 @@ interface GridHandler
 
     fun displayWinDialogue(context: Context)
 
-    fun getLetterAdapter(context: Context, letters: LinkedHashMap<Int, Char>): LetterAdapter
+    fun getLetterAdapter(context: Context, letters: ArrayList<Letter>): LetterAdapter
 }

@@ -2,10 +2,7 @@
 A word search application that was done for Shopify's Android Dev. Internship.
 
 Libraries Used:
-Dagger2 (Dependency Injection)
-```
-'com.google.dagger:dagger:2.13'
-```
+[Dagger2](https://github.com/google/dagger)
 
 May 2019
 - Complete application in Java with a broken MVC design pattern.

@@ -16,4 +16,11 @@ Jan. 2020
 - Cleaned up the UI to implement dark interface, and changed order of layout
 - Added animations to buttons
 
+Unsolved
 ![Unsolved](Empty.png)
+
+Found Words
+![Words Found](Words_Found.png)
+
+Settings
+![Settings](Settings.png)

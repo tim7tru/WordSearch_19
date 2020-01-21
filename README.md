@@ -20,7 +20,7 @@ Unsolved
 ![Unsolved](Empty.png)
 
 Found Words
-![Words Found](Words Found.png)
+![Words Found](Words-Found.png)
 
 Settings
 ![Settings](Settings.png)

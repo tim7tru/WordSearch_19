@@ -10,5 +10,8 @@ Nov. 2019
 
 Jan. 2020
 - Refactored the MVVM architecture to include Android's ViewModel library
+- Refactored Activity views to include Fragments
 - Improved code architecture
 - Implemented Dagger2 to simplify code base
+- Cleaned up the UI to implement dark interface, and changed order of layout
+- Added animations to buttons

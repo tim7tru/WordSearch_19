@@ -47,7 +47,7 @@ class GridProvider @Inject constructor()
             returnWords.add(Word(index = index, word = AppConstants.DEFAULT_WORDS[index], beenFound = false))
         }
 
-        setWords(returnWords)
+        setWords(wordsArray = returnWords)
 
         return returnWords
     }

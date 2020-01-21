@@ -95,7 +95,7 @@ class DrawAdapter(private val context: Context,
                             {
                                 initialPosition = position
 
-                                allDirectionPossibilities = findAllDirectionPossibilities(initialPosition)
+                                allDirectionPossibilities = findAllDirectionPossibilities(position = initialPosition)
 
                                 directionPosition = -1
 
@@ -103,7 +103,11 @@ class DrawAdapter(private val context: Context,
 
                                 startCentreY = globalY + cellView.height / 2
 
-                                drawLine(startCentreX, startCentreY, startCentreX, startCentreY, AppConstants.PAINT_COLOUR_YELLOW)
+                                drawLine(startX = startCentreX,
+                                        startY = startCentreY,
+                                        endX = startCentreX,
+                                        endY = startCentreY,
+                                        colour = AppConstants.PAINT_COLOUR_YELLOW)
 
                                 startViewNumber = gridFrame.childCount - 1
 
@@ -113,11 +117,19 @@ class DrawAdapter(private val context: Context,
                             {
                                 if (allDirectionPossibilities.contains(position))
                                 {
-                                    gridHandler.removeSearchView(context, startViewNumber, gridFrame.childCount, gridFrame)
+                                    gridHandler.removeSearchView(context = context,
+                                            startViewCount = startViewNumber,
+                                            endViewCount = gridFrame.childCount,
+                                            gridFrame = gridFrame)
 
-                                    directionPosition = directionFinder(position, initialPosition)
+                                    directionPosition = directionFinder(newPosition = position,
+                                            initialPosition = initialPosition)
 
-                                    drawLine(startCentreX, startCentreY, centreX, centreY, AppConstants.PAINT_COLOUR_YELLOW)
+                                    drawLine(startX = startCentreX,
+                                            startY = startCentreY,
+                                            endX = centreX,
+                                            endY = centreY,
+                                            colour = AppConstants.PAINT_COLOUR_YELLOW)
 
                                     currentPosition = position
                                 }
@@ -128,19 +140,30 @@ class DrawAdapter(private val context: Context,
                 MotionEvent.ACTION_UP -> {
                     if (startViewNumber != -1)
                     {
-                        val formedWord = getWord(currentPosition, initialPosition)
+                        val formedWord = getWord(newPosition = currentPosition,
+                                initialPosition = initialPosition)
 
                         endViewNumber = gridFrame.childCount
 
-                        gridHandler.removeSearchView(context, startViewNumber, endViewNumber, gridFrame)
+                        gridHandler.removeSearchView(context = context,
+                                startViewCount = startViewNumber,
+                                endViewCount = endViewNumber,
+                                gridFrame = gridFrame)
 
-                        if (formedWord != null && gridViewModel.containsWord(word = formedWord) && !(gridViewModel.getWords()[gridViewModel.getWordPositionByWord(formedWord)].beenFound))
+                        if (formedWord != null &&
+                                gridViewModel.containsWord(word = formedWord) &&
+                                !(gridViewModel.getWords()[gridViewModel.getWordPositionByWord(word = formedWord)].beenFound))
                         {
                             scoreHandler()
 
-                            drawLine(startCentreX, startCentreY, centreX, centreY, AppConstants.PAINT_COLOUR_GREEN)
+                            drawLine(startX = startCentreX,
+                                    startY = startCentreY,
+                                    endX = centreX,
+                                    endY = centreY,
+                                    colour = AppConstants.PAINT_COLOUR_GREEN)
 
-                            wordsHandler(gridViewModel.getWords(), formedWord)
+                            wordsHandler(words = gridViewModel.getWords(),
+                                    formedWord = formedWord)
 
                             winHandler()
                         }
@@ -150,19 +173,30 @@ class DrawAdapter(private val context: Context,
         }
         else if (position == -1 && action == MotionEvent.ACTION_UP)
         {
-            val formedWord = getWord(currentPosition, initialPosition)
+            val formedWord = getWord(newPosition = currentPosition,
+                    initialPosition = initialPosition)
 
             endViewNumber = gridFrame.childCount
 
-            gridHandler.removeSearchView(context, startViewNumber, endViewNumber, gridFrame)
+            gridHandler.removeSearchView(context = context,
+                    startViewCount = startViewNumber,
+                    endViewCount = endViewNumber,
+                    gridFrame = gridFrame)
 
-            if (formedWord != null && gridViewModel.containsWord(formedWord) && !(gridViewModel.getWords()[gridViewModel.getWordPositionByWord(formedWord)].beenFound))
+            if (formedWord != null &&
+                    gridViewModel.containsWord(word = formedWord) &&
+                    !(gridViewModel.getWords()[gridViewModel.getWordPositionByWord(word = formedWord)].beenFound))
             {
                 scoreHandler()
 
-                drawLine(startCentreX, startCentreY, centreX, centreY, AppConstants.PAINT_COLOUR_GREEN)
+                drawLine(startX = startCentreX,
+                        startY = startCentreY,
+                        endX = centreX,
+                        endY = centreY,
+                        colour = AppConstants.PAINT_COLOUR_GREEN)
 
-                wordsHandler(gridViewModel.getWords(), formedWord)
+                wordsHandler(words = gridViewModel.getWords(),
+                        formedWord = formedWord)
 
                 winHandler()
             }
@@ -178,34 +212,43 @@ class DrawAdapter(private val context: Context,
 
     private fun wordsHandler(words: ArrayList<Word>, formedWord: String)
     {
-        words[gridViewModel.getWordPositionByWord(formedWord)].beenFound = true
+        words[gridViewModel.getWordPositionByWord(word = formedWord)].beenFound = true
 
-        gridViewModel.setWords(words)
+        gridViewModel.setWords(words = words)
 
-        gridHandler.strikeOutWord(context, formedWord, wordsTableLayout)
+        gridHandler.strikeOutWord(context = context,
+                word = formedWord,
+                tableLayout = wordsTableLayout)
     }
 
     private fun scoreHandler()
     {
-        informationBarViewModel.setScore(false)
-        informationBarHandler.setScoreTextView(informationBarViewModel.getScore(), informationBarViewModel.getTotal(), scoreTextView)
+        informationBarViewModel.setScore(resetScore = false)
+
+        informationBarHandler.setScoreTextView(score = informationBarViewModel.getScore(),
+                total = informationBarViewModel.getTotal(),
+                scoreView = scoreTextView)
     }
 
     private fun winHandler()
     {
         if (informationBarViewModel.getScore() == informationBarViewModel.getTotal())
         {
-            gridHandler.displayWinDialogue(context)
+            gridHandler.displayWinDialogue(context = context)
         }
     }
 
     private fun drawLine(startX: Int?, startY: Int?, endX: Int?, endY: Int?, colour: Int)
     {
-        val drawUtils = DrawUtils(context)
+        val drawUtils = DrawUtils(context = context)
 
         gridFrame.addView(drawUtils)
 
-        drawUtils.drawLine(startX!!.toFloat(), startY!!.toFloat(), endX!!.toFloat(), endY!!.toFloat(), colour)
+        drawUtils.drawLine(startX = startX!!.toFloat(),
+                startY = startY!!.toFloat(),
+                endX = endX!!.toFloat(),
+                endY = endY!!.toFloat(),
+                colour = colour)
     }
 
     private fun getWord(newPosition: Int, initialPosition: Int): String?
@@ -245,22 +288,22 @@ class DrawAdapter(private val context: Context,
     {
         val directionHint = newPosition - initialPosition
 
-        if (isCellLower(directionHint))
+        if (isCellLower(directionHint = directionHint))
         {
             when {
-                isVertical(directionHint) -> return AppConstants.DIRECTION_STRAIGHT_UP
-                isHorizontal(directionHint) -> return AppConstants.DIRECTION_STRAIGHT_LEFT
-                isLeftHighDiagonal(directionHint) -> return AppConstants.DIRECTION_DIAGONAL_UP_LEFT
-                isLeftLowDiagonal(directionHint) -> return AppConstants.DIRECTION_DIAGONAL_UP_RIGHT
+                isVertical(directionHint = directionHint) -> return AppConstants.DIRECTION_STRAIGHT_UP
+                isHorizontal(directionHint =directionHint) -> return AppConstants.DIRECTION_STRAIGHT_LEFT
+                isLeftHighDiagonal(directionHint =directionHint) -> return AppConstants.DIRECTION_DIAGONAL_UP_LEFT
+                isLeftLowDiagonal(directionHint =directionHint) -> return AppConstants.DIRECTION_DIAGONAL_UP_RIGHT
             }
         }
         else
         {
             when {
-                isVertical(directionHint) -> return AppConstants.DIRECTION_STRAIGHT_DOWN
-                isHorizontal(directionHint) -> return AppConstants.DIRECTION_STRAIGHT_RIGHT
-                isLeftHighDiagonal(directionHint) -> return AppConstants.DIRECTION_DIAGONAL_DOWN_RIGHT
-                isLeftLowDiagonal(directionHint) -> return AppConstants.DIRECTION_DIAGONAL_DOWN_LEFT
+                isVertical(directionHint =directionHint) -> return AppConstants.DIRECTION_STRAIGHT_DOWN
+                isHorizontal(directionHint =directionHint) -> return AppConstants.DIRECTION_STRAIGHT_RIGHT
+                isLeftHighDiagonal(directionHint =directionHint) -> return AppConstants.DIRECTION_DIAGONAL_DOWN_RIGHT
+                isLeftLowDiagonal(directionHint =directionHint) -> return AppConstants.DIRECTION_DIAGONAL_DOWN_LEFT
             }
         }
         return -1

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import com.example.timmytruong.wordsearch_19.R
 import com.example.timmytruong.wordsearch_19.model.Letter
 
@@ -39,6 +40,7 @@ class LetterAdapter(val context: Context, private val letters: ArrayList<Letter>
         }
 
         val letter: TextView = newConvertView!!.findViewById(R.id.letter)
+        letter.setTextColor(ResourcesCompat.getColor(context.resources, R.color.black, null))
         letter.tag = position
         letter.text = letters[position].letter.toString()
 

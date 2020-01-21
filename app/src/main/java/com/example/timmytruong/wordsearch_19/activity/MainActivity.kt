@@ -8,8 +8,10 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import com.example.timmytruong.wordsearch_19.R
 import com.example.timmytruong.wordsearch_19.adapters.GridAdapter
 import com.example.timmytruong.wordsearch_19.dagger.component.DaggerAppComponent
@@ -113,6 +115,7 @@ class MainActivity : AppCompatActivity()
                 textParams.width = 0
                 wordText.layoutParams = textParams
 
+                wordText.setTextColor(ResourcesCompat.getColor(resources, R.color.black, null))
                 wordText.textSize = 16.toFloat()
                 wordText.text = word.word
                 wordText.setPadding(0, 10, 0, 10)
@@ -174,9 +177,13 @@ class MainActivity : AppCompatActivity()
 
     private var informationBarHandler: InformationBarHandler = object : InformationBarHandler
     {
-        override fun setResetClickListener(resetBTN: Button)
+        override fun setResetClickListener(resetBTN: TextView)
         {
             val resetClickListener = View.OnClickListener {
+                val animation = AnimationUtils.loadAnimation(this@MainActivity, R.anim.button_click)
+
+                resetBTN.startAnimation(animation)
+
                 gridAdapter.reset()
 
                 reset()
@@ -191,10 +198,13 @@ class MainActivity : AppCompatActivity()
             scoreView.text = text
         }
 
-        override fun setPlusClickListener(context: Context, words: ArrayList<Word>,
-                                          plusBTN: Button)
+        override fun setSettingsClickListener(context: Context, words: ArrayList<Word>,
+                                          settingsBTN: ImageView)
         {
             val plusClickListener = View.OnClickListener {
+                val animation = AnimationUtils.loadAnimation(this@MainActivity, R.anim.button_click)
+
+                resetBTN.startAnimation(animation)
 
                 val bundle = Bundle()
 
@@ -206,7 +216,7 @@ class MainActivity : AppCompatActivity()
                         .show(settingsFragment)
                         .commit()
             }
-            plusBTN.setOnClickListener(plusClickListener)
+            settingsBTN.setOnClickListener(plusClickListener)
         }
     }
 
@@ -221,18 +231,17 @@ class MainActivity : AppCompatActivity()
 
     }
 
-    @Suppress("PLUGIN_WARNING")
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
 
-        DaggerAppComponent.create().inject(this)
+        DaggerAppComponent.create().inject(mainActivity = this)
 
-        gridViewModel = gridViewModelFactory.create(GridViewModel::class.java)
+        gridViewModel = gridViewModelFactory.create(modelClass = GridViewModel::class.java)
 
-        informationBarViewModel = informationBarViewModelFactory.create(InformationBarViewModel::class.java)
+        informationBarViewModel = informationBarViewModelFactory.create(modelClass = InformationBarViewModel::class.java)
 
         settingsFragment = SettingsFragment(saveHandler = saveHandler)
 
@@ -267,9 +276,9 @@ class MainActivity : AppCompatActivity()
 
         informationBarHandler.setResetClickListener(resetBTN = resetBTN)
 
-        informationBarHandler.setPlusClickListener(context = this,
+        informationBarHandler.setSettingsClickListener(context = this,
                 words = gridViewModel.getWords(),
-                plusBTN = plusBTN)
+                settingsBTN = settingsBTN)
     }
 
     private fun reset()

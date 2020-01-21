@@ -1,9 +1,12 @@
 package com.example.timmytruong.wordsearch_19.fragment
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -18,7 +21,7 @@ import com.example.timmytruong.wordsearch_19.viewmodel.factory.SettingsViewModel
 import kotlinx.android.synthetic.main.fragment_edit_words.*
 import javax.inject.Inject
 
-class SettingsFragment(private val saveHandler: SaveHandler) : Fragment()
+class SettingsFragment(private val saveHandler: SaveHandler? = null) : Fragment()
 {
     @Inject lateinit var settingsViewModelFactory: SettingsViewModelFactory
 
@@ -61,31 +64,53 @@ class SettingsFragment(private val saveHandler: SaveHandler) : Fragment()
 
             for (i in 0 until settingsViewModel.getSavedWords().size)
             {
-                editTexts[i].setText(settingsViewModel.getSavedWords()[i].word)
+                editTexts[i].setText(settingsViewModel.getSavedWords()[i].word.toUpperCase())
             }
 
             cancelBTN.setOnClickListener {
+                val animation = AnimationUtils.loadAnimation(activity, R.anim.button_click)
+
+                cancelBTN.startAnimation(animation)
+
                 finish()
             }
 
             saveBTN.setOnClickListener {
+                val animation = AnimationUtils.loadAnimation(activity, R.anim.button_click)
+
+                var validInputs = true
+
+                cancelBTN.startAnimation(animation)
+
                 settingsViewModel.clearSavedWords()
 
                 for (i in 0 until editTexts.size)
                 {
                     if (editTexts[i].text.toString() != "" && editTexts[i].text.toString().length <= 10)
                     {
+                        if (editTexts[i].text.toString().contains(" "))
+                        {
+                            editTexts[i].text.toString().replace(" ", "")
+                        }
+
                         settingsViewModel.addSavedWord(Word(word = editTexts[i].text.toString().toUpperCase(), beenFound = false, index = i))
+
+                        saveHandler?.onSaveClicked()
+
+                        validInputs = validInputs && true
                     }
                     else if (editTexts[i].text.toString().length > 10)
                     {
                         Toast.makeText(activity, editTexts[i].text.toString() + " is too long, please keep words under 10 characters.", Toast.LENGTH_SHORT).show()
+
+                        validInputs = validInputs && false
                     }
                 }
 
-                saveHandler.onSaveClicked()
-
-                finish()
+                if (validInputs)
+                {
+                    finish()
+                }
             }
         }
     }
@@ -94,6 +119,10 @@ class SettingsFragment(private val saveHandler: SaveHandler) : Fragment()
     {
         if (activity != null)
         {
+            val imm = activity!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+
+            imm.hideSoftInputFromWindow(getView()!!.windowToken, 0)
+
             activity!!.supportFragmentManager.beginTransaction().hide(this).commit()
         }
     }
